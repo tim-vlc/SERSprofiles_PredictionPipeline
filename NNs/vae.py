@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import pandas as pd
 
 # We define a Variational Autoencoder Class, which combines the Encoder and Decoder classes.
 # Composition:

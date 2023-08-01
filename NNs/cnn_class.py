@@ -19,7 +19,7 @@ device = torch.device("cuda:0")
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
 X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
 
-input_size = 900
+input_size = 851
 output_size = 5
 
 dropratio = 0.15

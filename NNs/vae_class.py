@@ -4,9 +4,9 @@ import torch
 from vae import VariationalAutoencoder, train_epoch, test_epoch
 
 
-train_data = pd.read_csv('CSVs/processed_data/train_data.csv')
+train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
 train_data.dropna(inplace=True)
-test_data = pd.read_csv('CSVs/processed_data/test_data.csv')
+test_data = pd.read_csv('../../CSVs/processed_data/test_data.csv')
 test_data.dropna(inplace=True)
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
@@ -41,4 +41,4 @@ for epoch in range(num_epochs):
         print('\n EPOCH {}/{} \t train loss {:.3f} \t val loss {:.3f}'.format(epoch + 1, num_epochs,train_loss,val_loss))
 
 # Save the model state dictionary
-torch.save(vae.state_dict(), 'vae_model_state_dict_CC.pth')
+torch.save(vae.state_dict(), '../saved_models/vae_model_state_dict_CC.pth')

@@ -1,6 +1,4 @@
-import torch
 import torch.nn as nn
-import torch.optim as optim
 
 class NN(nn.Module):
     def __init__(self, input_size, output_size, dense1_output, dense2_output, dense3_output, dense4_output, dropratio):
