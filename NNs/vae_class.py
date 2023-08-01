@@ -1,7 +1,7 @@
 import pandas as pd
 import torch
 
-from vae import VariationalAutoencoder, train_epoch, test_epoch
+from vae2 import VariationalAutoencoder, train_epoch, test_epoch
 
 
 train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
@@ -37,7 +37,7 @@ num_epochs = 20
 for epoch in range(num_epochs):
     train_loss = train_epoch(vae,device,X_train,optim_)
     val_loss = test_epoch(vae,device,X_test)
-    if epoch % 10 == 0:
+    if epoch % 4 == 0:
         print('\n EPOCH {}/{} \t train loss {:.3f} \t val loss {:.3f}'.format(epoch + 1, num_epochs,train_loss,val_loss))
 
 # Save the model state dictionary

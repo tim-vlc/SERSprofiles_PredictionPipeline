@@ -15,24 +15,11 @@ class VariationalEncoder(nn.Module):
     def __init__(self, latent_dims):  
         super(VariationalEncoder, self).__init__()
         
-        # 1st Convolutional Layer
-        self.conv1 = nn.Sequential(
-            nn.Conv1d(in_channels=1, out_channels=16, kernel_size=20, stride=1)
-        )
-        
-        # 2nd Convolutional Layer
-        self.conv2 = nn.Sequential(
-            nn.Conv1d(in_channels=16, out_channels=32, kernel_size=20, stride=1)
-        )
-        
-        # 3rd Convolutional Layer
-        self.conv3 = nn.Sequential(
-            nn.Conv1d(in_channels=32, out_channels=64, kernel_size=20, stride=1)
-        )
-        
-        self.fc1 = nn.Linear(64 * 794, 512)
-        self.fc2 = nn.Linear(512, latent_dims)
-        self.fc3 = nn.Linear(512, latent_dims)
+        self.fc1 = nn.Linear(851, 512)
+        self.fc2 = nn.Linear(512, 256)
+        self.fc3 = nn.Linear(256, 128)
+        self.fc4 = nn.Linear(128, latent_dims)
+        self.fc5 = nn.Linear(128, latent_dims)
 
         self.N = torch.distributions.Normal(0, 1)
         self.kl = 0
@@ -40,14 +27,11 @@ class VariationalEncoder(nn.Module):
     def forward(self, x):
         # x = x.to(device)
         x = x.unsqueeze(1)
-        
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv3(x))
-        x = x.view(x.size(0), -1)  # Flatten the output for fully connected layers
         x = F.relu(self.fc1(x))
-        mu = self.fc2(x)
-        sigma = torch.exp(self.fc3(x))
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        mu = self.fc4(x)
+        sigma = torch.exp(self.fc5(x))
         z = mu + sigma * self.N.sample(mu.shape)
         self.kl = (sigma**2 + mu**2 - torch.log(sigma) - 1/2).sum()
         return z
@@ -57,32 +41,16 @@ class Decoder(nn.Module):
     def __init__(self, latent_dims):
         super(Decoder, self).__init__()
         
-        self.fc1 = nn.Linear(latent_dims, 512)
-        self.fc2 = nn.Linear(512, 794*64)
-
-        # 1st Convolutional Layer
-        self.conv1 = nn.Sequential(
-            nn.ConvTranspose1d(in_channels=64, out_channels=32, kernel_size=20, stride=1)
-        )
-        
-        # 2nd Convolutional Layer
-        self.conv2 = nn.Sequential(
-            nn.ConvTranspose1d(in_channels=32, out_channels=16, kernel_size=20, stride=1)
-        )
-        
-        # 3rd Convolutional Layer
-        self.conv3 = nn.Sequential(
-            nn.ConvTranspose1d(in_channels=16, out_channels=1, kernel_size=20, stride=1)
-        )
+        self.fc1 = nn.Linear(latent_dims, 128)
+        self.fc2 = nn.Linear(128, 256)
+        self.fc3 = nn.Linear(256, 512)
+        self.fc4 = nn.Linear(512, 851)
         
     def forward(self, z):
         z = F.relu(self.fc1(z))
         z = F.relu(self.fc2(z))
-        z = z.view(z.size(0), 64, 794)  # Reshape for convolutional layers
-        #z = z.unsqueeze(1)
-        z = F.relu(self.conv1(z))
-        z = F.relu(self.conv2(z))
-        z = torch.sigmoid(self.conv3(z))
+        z = F.relu(self.fc3(z))
+        z = torch.sigmoid(self.fc4(z))
         return z
     
 class VariationalAutoencoder(nn.Module):
