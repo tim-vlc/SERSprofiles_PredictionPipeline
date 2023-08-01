@@ -12,13 +12,15 @@ from nn import NN
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
-train_data = pd.read_csv('augmented_train_data.csv')
-test_data = pd.read_csv('augmented_test_data.csv')
+train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
+test_data = pd.read_csv('../../CSVs/processed_data/test_data.csv')
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
 X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
 
-input_size = 1650
+device = torch.device("cuda:0")
+
+input_size = 851
 output_size = 5
 dense1_output = 32
 dense2_output = 16
@@ -31,8 +33,10 @@ batch = 10
 ep = 150 # epoch
     
 model = NN(input_size, output_size, dense1_output, dense2_output, dense3_output, dense4_output, dropratio)
+model.to(device)
 
 criterion = nn.CrossEntropyLoss()
+criterion.to(device)
 optimizer = optim.Adam(model.parameters(), lr=alpha)
 
 #OneHot the labels
@@ -42,8 +46,8 @@ test_encoder = LabelEncoder()
 train_labels = train_encoder.fit_transform(y_train)
 test_labels = test_encoder.fit_transform(y_test)
 
-onehot_train = OneHotEncoder(sparse=False)
-onehot_test = OneHotEncoder(sparse=False)
+onehot_train = OneHotEncoder(sparse_output=False)
+onehot_test = OneHotEncoder(sparse_output=False)
 
 label_train = y_train
 label_test = y_test
@@ -70,8 +74,8 @@ for epoch in range(ep):
     model.train()
     running_loss = 0.0
     for i in range(0, len(X_train), batch):
-        batch_X = torch.tensor(X_train[i:i+batch], dtype=torch.float32)
-        batch_y = torch.tensor(y_train[i:i+batch], dtype=torch.float32)
+        batch_X = X_train[i:i+batch].clone().detach().float().to(device)
+        batch_y = y_train[i:i+batch].clone().detach().float().to(device)
         
         optimizer.zero_grad()
         outputs = model(batch_X)
@@ -94,7 +98,7 @@ raw_outputs = []
 prediction_list = []
 labels_list=[]
 
-outputs = (model(torch.tensor(X_test, dtype=torch.float32))).detach().numpy()
+outputs = (model(torch.tensor(X_test, dtype=torch.float32).to(device))).detach().cpu().numpy()
 predicted = np.argmax(outputs, 1)
 
 truth = np.argmax(y_test, 1).detach().numpy()
