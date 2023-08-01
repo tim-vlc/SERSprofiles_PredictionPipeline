@@ -72,7 +72,7 @@ def train_epoch(vae, device, X_train, optimizer):
     train_loss = 0.0
     # Iterate the dataloader (we do not need the label values, this is unsupervised learning)
     for i in range(0, len(X_train), batch):
-        batch_X = torch.tensor(X_train[i:i+batch], dtype=torch.float32).to(device)
+        batch_X = X_train[i:i+batch].clone().detach().float().to(device)
         
         x_hat = vae(batch_X)
         # Evaluate loss
@@ -100,7 +100,7 @@ def test_epoch(vae, device, X_test):
     with torch.no_grad(): # No need to track the gradients
         for i in range(len(X_test)):
             # Move tensor to the proper device
-            x = torch.tensor(X_test[i], dtype=torch.float32).to(device)
+            x = X_test[i].clone().detach().float().to(device)
             
             # Decode data
             x_test = x.unsqueeze(0)
