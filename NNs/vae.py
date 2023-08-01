@@ -34,8 +34,9 @@ class VariationalEncoder(nn.Module):
         self.fc2 = nn.Linear(512, latent_dims)
         self.fc3 = nn.Linear(512, latent_dims)
 
-        self.N = torch.distributions.Normal(0, 1).to(device)
+        self.N = torch.distributions.Normal(0, 1)
         self.kl = 0
+        self.device = device
 
     def forward(self, x):
         # x = x.to(device)
@@ -48,7 +49,8 @@ class VariationalEncoder(nn.Module):
         x = F.relu(self.fc1(x))
         mu = self.fc2(x)
         sigma = torch.exp(self.fc3(x))
-        z = mu + sigma * self.N.sample(mu.shape)
+        N = self.N.sample(mu.shape).clone().detach().to(self.device)
+        z = mu + sigma * N
         self.kl = (sigma**2 + mu**2 - torch.log(sigma) - 1/2).sum()
         return z
 
