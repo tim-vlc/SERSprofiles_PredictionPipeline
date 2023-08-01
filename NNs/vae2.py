@@ -12,7 +12,7 @@ import torch.nn.functional as F
 # VAE ==> we obtain the Kullback-Leibler Term (D_{kl})
 
 class VariationalEncoder(nn.Module):
-    def __init__(self, latent_dims):  
+    def __init__(self, latent_dims, device):  
         super(VariationalEncoder, self).__init__()
         
         self.fc1 = nn.Linear(851, 512)
@@ -21,7 +21,7 @@ class VariationalEncoder(nn.Module):
         self.fc4 = nn.Linear(128, latent_dims)
         self.fc5 = nn.Linear(128, latent_dims)
 
-        self.N = torch.distributions.Normal(0, 1)
+        self.N = torch.distributions.Normal(0, 1).to(device)
         self.kl = 0
 
     def forward(self, x):
@@ -54,9 +54,9 @@ class Decoder(nn.Module):
         return z
     
 class VariationalAutoencoder(nn.Module):
-    def __init__(self, latent_dims):
+    def __init__(self, latent_dims, device):
         super(VariationalAutoencoder, self).__init__()
-        self.encoder = VariationalEncoder(latent_dims)
+        self.encoder = VariationalEncoder(latent_dims, device)
         self.decoder = Decoder(latent_dims)
 
     def forward(self, x):

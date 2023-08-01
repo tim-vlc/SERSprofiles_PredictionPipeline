@@ -19,14 +19,14 @@ torch.manual_seed(0)
 
 d = 32
 
-vae = VariationalAutoencoder(latent_dims=d)
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+print(f'Selected device: {device}')
+
+vae = VariationalAutoencoder(latent_dims=d, device=device)
 
 lr = 1e-3 
 
 optim_ = torch.optim.Adam(vae.parameters(), lr=lr, weight_decay=1e-5)
-
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-print(f'Selected device: {device}')
 
 vae.to(device)
 vae.encoder.to(device)
