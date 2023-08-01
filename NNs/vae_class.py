@@ -29,6 +29,8 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 print(f'Selected device: {device}')
 
 vae.to(device)
+vae.encoder.to(device)
+vae.decoder.to(device)
 
 # Train
 
