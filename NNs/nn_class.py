@@ -98,7 +98,7 @@ raw_outputs = []
 prediction_list = []
 labels_list=[]
 
-outputs = (model(torch.tensor(X_test, dtype=torch.float32).to(device))).detach().cpu().numpy()
+outputs = (model(X_test.clone().detach().float().to(device))).detach().cpu().numpy()
 predicted = np.argmax(outputs, 1)
 
 truth = np.argmax(y_test, 1).detach().numpy()

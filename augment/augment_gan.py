@@ -1,6 +1,10 @@
 import pandas as pd
 import numpy as np
 import torch
+import sys
+
+sys.path.insert(1, '../NNs')
+
 from gan import Generator, Discriminator
 
 import ramanspy as rp

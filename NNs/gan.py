@@ -40,7 +40,7 @@ class Discriminator(nn.Module):
         return self.model(x)
     
 # Training loop
-def train(generator, discriminator, train_loader, num_epochs, criterion, discriminator_optimizer, generator_optimizer, g_loss, d_loss):
+def train(generator, discriminator, train_loader, num_epochs, criterion, discriminator_optimizer, generator_optimizer, g_loss, d_loss, device):
     for epoch in range(num_epochs):
         gen_losses = []
         disc_losses = []
@@ -52,14 +52,14 @@ def train(generator, discriminator, train_loader, num_epochs, criterion, discrim
             noise = torch.randn(batch_size, 100)
 
             # Generate fake images
-            fake_spectra = generator(noise)
+            fake_spectra = generator(noise.to(device))
 
             # Train discriminator
-            real_logits = discriminator(spectra)
+            real_logits = discriminator(spectra.to(device))
             fake_logits = discriminator(fake_spectra.detach())
 
-            real_labels = torch.ones(batch_size, 1)
-            fake_labels = torch.zeros(batch_size, 1)
+            real_labels = torch.ones(batch_size, 1).to(device)
+            fake_labels = torch.zeros(batch_size, 1).to(device)
 
             disc_loss = criterion(real_logits, real_labels) + criterion(fake_logits, fake_labels)
 

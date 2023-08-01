@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-import random
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -12,8 +11,10 @@ from cnn import CNN
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
-train_data = pd.read_csv('augmented_train_data.csv')
-test_data = pd.read_csv('augmented_test_data.csv')
+train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
+test_data = pd.read_csv('../../CSVs/processed_data/test_data.csv')
+
+device = torch.device("cuda:0")
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
 X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
@@ -27,8 +28,10 @@ batch = 175
 ep = 20 # epoch
     
 model = CNN()
+model.to(device)
 
 criterion = nn.CrossEntropyLoss()
+criterion.to(device)
 optimizer = optim.Adam(model.parameters(), lr=alpha)
 
 #OneHot the labels
@@ -61,8 +64,8 @@ for epoch in range(ep):
     model.train()
     running_loss = 0.0
     for i in range(0, len(X_train), batch):
-        batch_X = torch.tensor(X_train[i:i+batch], dtype=torch.float32)
-        batch_y = torch.tensor(y_train[i:i+batch], dtype=torch.float32)
+        batch_X = X_train[i:i+batch].clone().detach().float().to(device)
+        batch_y = y_train[i:i+batch].clone().detach().float().to(device)
         
         optimizer.zero_grad()
         outputs = model(batch_X)
@@ -85,7 +88,7 @@ raw_outputs = []
 prediction_list = []
 labels_list=[]
 
-outputs = (model(torch.tensor(X_test, dtype=torch.float32))).detach().numpy()
+outputs = (model(X_test.clone().detach().float().to(device))).detach().cpu().numpy()
 predicted = np.argmax(outputs, 1)
 
 truth = np.argmax(y_test, 1).detach().numpy()
