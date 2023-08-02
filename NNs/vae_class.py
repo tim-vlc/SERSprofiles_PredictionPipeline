@@ -17,7 +17,7 @@ X_train, X_test = torch.tensor(X_train.values), torch.tensor(X_test.values)
 # Set the random seed for reproducible results
 torch.manual_seed(0)
 
-d = 32
+d = 50
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 print(f'Selected device: {device}')
