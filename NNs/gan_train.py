@@ -9,19 +9,14 @@ import pandas as pd
 
 from gan import Generator, Discriminator, train
 
-num_workers = 0
-batch_size = 20
-
 train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
 
 labels = ['IHG', 'ILG', 'MCN', 'SCA', 'PC']
-list_df = []
 
-for label in labels:
+def train_gan(label, train_data):
     print(f"Getting the {label} dataframe...")
     df = train_data[train_data['labels']==label]
     df.iloc[:, -1] = 0
-    list_df.append(df)
     print("Done!")
 
     # Split the DataFrame into input features (spectra) and labels
@@ -43,7 +38,6 @@ for label in labels:
     # Create data loader
     train_loader = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, shuffle=True)
 
-    BUFFER_SIZE = len(df)
     g_loss = []
     d_loss = []
 
@@ -66,3 +60,9 @@ for label in labels:
     print("Done!")
     torch.save(generator.state_dict(), f"../NNs/saved_models/{label}_gen_model.pth")
     torch.save(discriminator.state_dict(), f"../NNs/saved_models/{label}_disc_model.pth")
+
+label = 'IHG'
+train_gan(label, train_data)
+
+# for label in labels:
+#     train_gan(label, train_data, batch_size)
