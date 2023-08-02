@@ -34,7 +34,7 @@ vae.decoder.to(device)
 
 # Train
 
-num_epochs = 20
+num_epochs = 10
 
 for epoch in range(num_epochs):
     train_loss = train_epoch(vae,device,X_train,optim_)
