@@ -54,12 +54,12 @@ def train_gan(label, train_data):
     discriminator_optimizer = optim.Adam(discriminator.parameters(), lr=0.0002, betas=(0.5, 0.999))
 
     # Train the model
-    EPOCHS = 500
+    EPOCHS = 200
     print(f"Training the {label} GAN model...")
     train(generator, discriminator, train_loader, EPOCHS, criterion, discriminator_optimizer, generator_optimizer, g_loss, d_loss, device)
     print("Done!")
-    torch.save(generator.state_dict(), f"../NNs/saved_models/{label}_gen_model.pth")
-    torch.save(discriminator.state_dict(), f"../NNs/saved_models/{label}_disc_model.pth")
+    torch.save(generator.state_dict(), f"../saved_models/{label}_gen_model.pth")
+    torch.save(discriminator.state_dict(), f"../saved_models/{label}_disc_model.pth")
 
 label = 'IHG'
 train_gan(label, train_data)
