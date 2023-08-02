@@ -78,7 +78,7 @@ def train_epoch(vae, device, X_train, optimizer):
         
         x_hat = vae(batch_X)
         # Evaluate loss
-        loss = ((batch_X - x_hat)**2).sum() + vae.encoder.kl
+        loss = ((batch_X - x_hat)**2).sum() #+ vae.encoder.kl
         
         # Backward pass
         optimizer.zero_grad()
