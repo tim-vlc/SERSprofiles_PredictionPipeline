@@ -15,6 +15,11 @@ class VariationalEncoder(nn.Module):
     def __init__(self, latent_dims, device):  
         super(VariationalEncoder, self).__init__()
         
+        # 1st Convolutional Layer
+        self.conv1 = nn.Sequential(
+            nn.Conv1d(in_channels=1, out_channels=16, kernel_size=20, stride=1)
+        )
+
         self.fc1 = nn.Linear(851, 512)
         self.fc2 = nn.Linear(512, 256)
         self.fc3 = nn.Linear(256, 128)
@@ -28,6 +33,9 @@ class VariationalEncoder(nn.Module):
     def forward(self, x):
         # x = x.to(device)
         x = x.unsqueeze(1)
+        x = F.relu(self.conv1(x))
+        x = x.view(x.size(0), -1)  # Flatten the output for fully connected layers
+
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
@@ -52,7 +60,7 @@ class Decoder(nn.Module):
         z = F.relu(self.fc1(z))
         z = F.relu(self.fc2(z))
         z = F.relu(self.fc3(z))
-        z = torch.sigmoid(self.fc4(z))
+        z = torch.tanh(self.fc4(z))
         return z
     
 class VariationalAutoencoder(nn.Module):
@@ -78,7 +86,7 @@ def train_epoch(vae, device, X_train, optimizer):
         
         x_hat = vae(batch_X)
         # Evaluate loss
-        loss = ((batch_X - x_hat)**2).sum() #+ vae.encoder.kl
+        loss = ((batch_X - x_hat)**2).sum() + vae.encoder.kl
         
         # Backward pass
         optimizer.zero_grad()
