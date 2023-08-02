@@ -35,7 +35,7 @@ class VariationalEncoder(nn.Module):
         sigma = torch.exp(self.fc5(x))
         N = self.N.sample(mu.shape).clone().detach().to(self.device)
         z = mu + sigma * N
-        self.kl = (sigma**2 + mu**2 - torch.log(sigma) - 1/2).sum()
+        self.kl = 0.0001 * (sigma**2 + mu**2 - torch.log(sigma) - 1/2).mean()
         return z
 
 class Decoder(nn.Module):
@@ -78,7 +78,7 @@ def train_epoch(vae, device, X_train, optimizer):
         
         x_hat = vae(batch_X)
         # Evaluate loss
-        loss = ((batch_X - x_hat)**2).sum() #+ vae.encoder.kl
+        loss = ((batch_X - x_hat)**2).sum() + vae.encoder.kl
         
         # Backward pass
         optimizer.zero_grad()
