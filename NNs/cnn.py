@@ -19,7 +19,7 @@ class CNN(nn.Module):
         )
 
         # Fully Connected Layers
-        self.fc1 = nn.Linear(862 * 64, 20)  # 900 is the flattened size from the previous layers
+        self.fc1 = nn.Linear(813 * 64, 20)  # 900 is the flattened size from the previous layers
         self.fc2 = nn.Linear(20, 5)         # 5 output neurons for the 5 possible classes
 
         # Dropout layer with inactivation probability of 0.1

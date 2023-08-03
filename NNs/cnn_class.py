@@ -11,8 +11,10 @@ from cnn import CNN
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
-train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
-test_data = pd.read_csv('../../CSVs/processed_data/test_data.csv')
+type_ = 'raw'
+
+train_data = pd.read_csv(f'../../CSVs/{type_}_data/train_data.csv')
+test_data = pd.read_csv(f'../../CSVs/{type_}_data/test_data.csv')
 
 device = torch.device("cuda:0")
 
@@ -102,3 +104,7 @@ labels_list.append(truth)
 
 print('Accuracy of the network on the test data: %f %%' % (
     100 * correct / total))
+
+print('Saving model')
+torch.save(model.state_dict(), f"../saved_models/cnn_model.pth")
+print('Saved.')
