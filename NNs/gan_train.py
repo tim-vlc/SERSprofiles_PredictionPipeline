@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 
 import pandas as pd
+pd.options.mode.chained_assignment = None  # default='warn'
 
 from gan import Generator, Discriminator, train
 
@@ -16,7 +17,7 @@ labels = ['IHG', 'ILG', 'MCN', 'SCA', 'PC']
 def train_gan(label, train_data):
     print(f"Getting the {label} dataframe...")
     df = train_data[train_data['labels']==label]
-    df.iloc[:, -1] = 0
+    df[df.columns[-1]] = 0
     print("Done!")
 
     # Split the DataFrame into input features (spectra) and labels
@@ -61,7 +62,7 @@ def train_gan(label, train_data):
     torch.save(generator.state_dict(), f"../saved_models/{label}_gen_model.pth")
     torch.save(discriminator.state_dict(), f"../saved_models/{label}_disc_model.pth")
 
-label = 'IHG'
+label = 'SCA'
 train_gan(label, train_data)
 
 # for label in labels:
