@@ -10,7 +10,7 @@ from gan import Generator, Discriminator
 import ramanspy as rp
 from ramanspy import Spectrum
 
-train_data = pd.read_csv('../CSVs/processed_data/train_data.csv')
+train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
 
 pipe = rp.preprocessing.Pipeline([
     rp.preprocessing.denoise.SavGol(window_length=14, polyorder=3),
@@ -18,7 +18,7 @@ pipe = rp.preprocessing.Pipeline([
 
 def gan_augment(label, train_data, num_aug, ratio_dict, pipe):
     num_pixels = len(train_data.columns) - 1
-    grade = ratio_dict[label]
+    grade = 0.2 #ratio_dict[label]
     
     # Initialize generator and discriminator
     generator = Generator()
@@ -38,7 +38,7 @@ def gan_augment(label, train_data, num_aug, ratio_dict, pipe):
 
         while fake_pred < grade:
             # Generate noise
-            noise = torch.randn(1, 100)
+            noise = torch.randn(1, 1000)
 
             # Generate fake images
             fake_spectrum = generator(noise)
@@ -64,7 +64,7 @@ print(len_dict)
 for label in labels:
     length = len_dict[label]
 
-    updated_train_data = gan_augment(label, train_data, int(length), ratio_dict, pipe)
+    train_data = gan_augment(label, train_data, int(length), ratio_dict, pipe)
 
-updated_train_data.to_csv('ganaug_train_data.csv')
-print(len(updated_train_data))
+train_data.to_csv('../../CSVs/augmented_data/gan_train_data.csv')
+print(len(train_data))

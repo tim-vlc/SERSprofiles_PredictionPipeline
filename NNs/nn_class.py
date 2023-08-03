@@ -11,11 +11,11 @@ from nn import NN
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
-train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
+train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv')
 test_data = pd.read_csv('../../CSVs/processed_data/test_data.csv')
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
-X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
+X_train, y_train = train_data.iloc[:,1:-1], train_data.iloc[:,-1]
 
 print(X_train.head())
 device = torch.device("cuda:0")

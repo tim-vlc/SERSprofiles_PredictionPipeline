@@ -62,8 +62,8 @@ def train_gan(label, train_data):
     torch.save(generator.state_dict(), f"../saved_models/{label}_gen_model.pth")
     torch.save(discriminator.state_dict(), f"../saved_models/{label}_disc_model.pth")
 
-label = 'SCA'
+label = 'PC'
 train_gan(label, train_data)
 
-# for label in labels:
-#     train_gan(label, train_data, batch_size)
+#for label in labels:
+#     train_gan(label, train_data)

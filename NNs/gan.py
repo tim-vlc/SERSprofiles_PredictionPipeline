@@ -13,7 +13,7 @@ class Generator(nn.Module):
             nn.BatchNorm1d(512),
             nn.Linear(512, 256),
             nn.LeakyReLU(0.2),
-            nn.BatchNorm1d(512),
+            nn.BatchNorm1d(256),
             nn.Linear(256, 708),
             nn.LeakyReLU(0.2),
             nn.Linear(708, 851),
