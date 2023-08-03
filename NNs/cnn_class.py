@@ -11,8 +11,8 @@ from cnn import CNN
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
-type_ = 'raw'
-input_size = 1650
+type_ = 'processed'
+input_size = 851
 
 train_data = pd.read_csv(f'../../CSVs/{type_}_data/train_data.csv')
 test_data = pd.read_csv(f'../../CSVs/{type_}_data/test_data.csv')
@@ -27,9 +27,9 @@ output_size = 5
 dropratio = 0.15
 alpha = 0.0001 # learning rate
 batch = 175
-ep = 20 # epoch
+ep = 30 # epoch
     
-model = CNN()
+model = CNN(input_size)
 model.to(device)
 
 criterion = nn.CrossEntropyLoss()
@@ -43,8 +43,8 @@ test_encoder = LabelEncoder()
 train_labels = train_encoder.fit_transform(y_train)
 test_labels = test_encoder.fit_transform(y_test)
 
-onehot_train = OneHotEncoder(sparse=False)
-onehot_test = OneHotEncoder(sparse=False)
+onehot_train = OneHotEncoder(sparse_output=False)
+onehot_test = OneHotEncoder(sparse_output=False)
 
 label_train = y_train
 label_test = y_test
