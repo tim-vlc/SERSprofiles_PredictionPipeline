@@ -14,15 +14,12 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 train_type = 'processed' # 'processed' or 'augmented'
 input_size = 851
 
-train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv')
-if train_type == 'processed':
-    train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
+train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv') if train_type == 'augmented' else pd.read_csv('../../CSVs/processed_data/train_data.csv')
 test_data = pd.read_csv('../../CSVs/processed_data/test_data.csv')
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
-X_train, y_train = train_data.iloc[:,1:-1], train_data.iloc[:,-1]
+X_train, y_train = train_data.iloc[:,1:-1], train_data.iloc[:,-1] if train_type == 'augmented' else train_data.iloc[:,:-1], train_data.iloc[:,-1]
 
-print(X_train.head())
 device = torch.device("cuda:0")
 
 output_size = 5
@@ -116,3 +113,7 @@ labels_list.append(truth)
 
 print('Accuracy of the network on the test data: %f %%' % (
     100 * correct / total))
+
+print('Saving model')
+torch.save(model.state_dict(), f"../saved_models/nn_model.pth")
+print('Saved.')
