@@ -11,16 +11,17 @@ from cnn import CNN
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
-type_ = 'processed'
+type_ = 'augmented'
 input_size = 851
 
-train_data = pd.read_csv(f'../../CSVs/{type_}_data/train_data.csv')
+train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/train_data.csv')
 test_data = pd.read_csv(f'../../CSVs/{type_}_data/test_data.csv')
 
 device = torch.device("cuda:0")
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
-X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
+X_train = train_data.iloc[:,1:-1] if type_ == 'augmented' else train_data.iloc[:,:-1]
+y_train = train_data.iloc[:,-1]
 
 output_size = 5
 
