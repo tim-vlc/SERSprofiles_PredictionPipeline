@@ -80,5 +80,5 @@ for i, label in enumerate(dict_df.keys()):
 
 print('Saving the augmented data...')
 train_data = pd.concat(list_df)
-train_data.to_csv('../CSVs/augmented_data/augpro_train_data.csv')
+train_data.to_csv('../CSVs/augmented_data/augpro_train_data.csv', index=False)
 print('Augmentation is complete.')

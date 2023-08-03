@@ -20,8 +20,7 @@ test_data = pd.read_csv(f'../../CSVs/processed_data/test_data.csv') if type_ == 
 device = torch.device("cuda:0")
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
-X_train = train_data.iloc[:,1:-1] if type_ == 'augmented' else train_data.iloc[:,:-1]
-y_train = train_data.iloc[:,-1]
+X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
 
 output_size = 5
 

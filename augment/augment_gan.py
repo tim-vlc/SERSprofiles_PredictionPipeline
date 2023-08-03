@@ -18,7 +18,7 @@ pipe = rp.preprocessing.Pipeline([
 
 def gan_augment(label, train_data, num_aug, ratio_dict, pipe):
     num_pixels = len(train_data.columns) - 1
-    grade = 0.2 #ratio_dict[label]
+    grade = ratio_dict[label]
     
     # Initialize generator and discriminator
     generator = Generator()
@@ -57,7 +57,7 @@ def gan_augment(label, train_data, num_aug, ratio_dict, pipe):
 labels = ['IHG', 'ILG', 'MCN', 'SCA', 'PC']
 length_data = len(train_data)
 augment_num = 30000
-ratio_dict = {'IHG':0.3, 'ILG':0.6, 'MCN':0.9, 'SCA':0.8, 'PC':0.9}
+ratio_dict = {'IHG':0.9, 'ILG':0.6, 'MCN':0.9, 'SCA':0.8, 'PC':0.9}
 
 len_dict = ((train_data['labels'].value_counts() * augment_num) / length_data).to_dict()
 print(len_dict)
@@ -66,5 +66,5 @@ for label in labels:
 
     train_data = gan_augment(label, train_data, int(length), ratio_dict, pipe)
 
-train_data.to_csv('../../CSVs/augmented_data/gan_train_data.csv')
+train_data.to_csv('../../CSVs/augmented_data/gan_train_data.csv', index=False)
 print(len(train_data))
