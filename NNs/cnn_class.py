@@ -15,7 +15,7 @@ type_ = 'augmented'
 input_size = 851
 
 train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/train_data.csv')
-test_data = pd.read_csv(f'../../CSVs/{type_}_data/test_data.csv')
+test_data = pd.read_csv(f'../../CSVs/processed_data/test_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/test_data.csv')
 
 device = torch.device("cuda:0")
 
