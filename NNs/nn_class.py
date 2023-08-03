@@ -18,7 +18,8 @@ train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv') if trai
 test_data = pd.read_csv('../../CSVs/processed_data/test_data.csv')
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
-X_train, y_train = train_data.iloc[:,1:-1], train_data.iloc[:,-1] if train_type == 'augmented' else train_data.iloc[:,:-1], train_data.iloc[:,-1]
+X_train = train_data.iloc[:,1:-1] if train_type == 'augmented' else train_data.iloc[:,:-1]
+y_train = train_data.iloc[:,-1]
 
 device = torch.device("cuda:0")
 
