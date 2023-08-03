@@ -8,9 +8,12 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
 
         self.model = nn.Sequential(
-            nn.Linear(1000, 256),
+            nn.Linear(1000, 512),
             nn.LeakyReLU(0.2),
-            nn.BatchNorm1d(256),
+            nn.BatchNorm1d(512),
+            nn.Linear(512, 256),
+            nn.LeakyReLU(0.2),
+            nn.BatchNorm1d(512),
             nn.Linear(256, 708),
             nn.LeakyReLU(0.2),
             nn.Linear(708, 851),
