@@ -8,7 +8,7 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
 
         self.model = nn.Sequential(
-            nn.Linear(100, 256),
+            nn.Linear(1000, 256),
             nn.LeakyReLU(0.2),
             nn.BatchNorm1d(256),
             nn.Linear(256, 708),
@@ -49,7 +49,7 @@ def train(generator, discriminator, train_loader, num_epochs, criterion, discrim
             batch_size = spectra.size(0)
 
             # Generate noise
-            noise = torch.randn(batch_size, 100)
+            noise = torch.randn(batch_size, 1000)
 
             # Generate fake images
             fake_spectra = generator(noise.to(device))
