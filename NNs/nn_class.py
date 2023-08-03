@@ -11,7 +11,12 @@ from nn import NN
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
+train_type = 'processed' # 'processed' or 'augmented'
+input_size = 851
+
 train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv')
+if train_type == 'processed':
+    train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
 test_data = pd.read_csv('../../CSVs/processed_data/test_data.csv')
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
@@ -20,12 +25,11 @@ X_train, y_train = train_data.iloc[:,1:-1], train_data.iloc[:,-1]
 print(X_train.head())
 device = torch.device("cuda:0")
 
-input_size = 851
 output_size = 5
-dense1_output = 32
-dense2_output = 16
-dense3_output = 8
-dense4_output = 4
+dense1_output = 512
+dense2_output = 256
+dense3_output = 64
+dense4_output = 20
 
 dropratio = 0.15
 alpha = 0.0001 # learning rate
