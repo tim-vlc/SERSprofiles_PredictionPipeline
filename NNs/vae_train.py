@@ -4,9 +4,10 @@ import torch
 from vae2 import VariationalAutoencoder, train_epoch, test_epoch
 
 
-train_data = pd.read_csv('../../CSVs/processed_data/0.5complete_train_data.csv')
+ratio = 0.3
+train_data = pd.read_csv(f'../../CSVs/processed_data/{ratio}complete_train_data.csv')
 train_data.dropna(inplace=True)
-test_data = pd.read_csv('../../CSVs/processed_data/0.5complete_test_data.csv')
+test_data = pd.read_csv(f'../../CSVs/processed_data/{ratio}complete_test_data.csv')
 test_data.dropna(inplace=True)
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
@@ -17,7 +18,7 @@ X_train, X_test = torch.tensor(X_train.values), torch.tensor(X_test.values)
 # Set the random seed for reproducible results
 torch.manual_seed(0)
 
-d = 32
+d = 64
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 print(f'Selected device: {device}')
