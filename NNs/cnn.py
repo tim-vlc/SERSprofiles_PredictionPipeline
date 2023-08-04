@@ -1,10 +1,11 @@
 import torch.nn as nn
 
 class CNN(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self, input_size, output_size):
         super(CNN, self).__init__()
 
         self.input_size = input_size
+        self.output_size = output_size
         
         # 1st Convolutional Layer
         self.conv1 = nn.Sequential(
@@ -22,7 +23,7 @@ class CNN(nn.Module):
 
         # Fully Connected Layers
         self.fc1 = nn.Linear(1612 * 64, 20) if self.input_size == 1650 else nn.Linear(813 * 64, 20) # 813 for input 851 or 1612 for 1650
-        self.fc2 = nn.Linear(20, 5)         # 5 output neurons for the 5 possible classes
+        self.fc2 = nn.Linear(20, self.output_size)         # 5 output neurons for the 5 possible classes
 
         # Dropout layer with inactivation probability of 0.1
         self.dropout = nn.Dropout(0.1)

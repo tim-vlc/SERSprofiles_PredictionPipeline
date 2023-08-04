@@ -11,25 +11,25 @@ from cnn import CNN
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
-type_ = 'augmented'
+type_ = 'processed'
 input_size = 851
 
-train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/train_data.csv')
-test_data = pd.read_csv(f'../../CSVs/processed_data/test_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/test_data.csv')
+train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/complete_train_data.csv')
+test_data = pd.read_csv(f'../../CSVs/processed_data/test_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/complete_test_data.csv')
 
 device = torch.device("cuda:0")
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
 X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
 
-output_size = 5
+output_size = 7
 
 dropratio = 0.15
 alpha = 0.0001 # learning rate
 batch = 175
 ep = 30 # epoch
     
-model = CNN(input_size)
+model = CNN(input_size, output_size)
 model.to(device)
 
 criterion = nn.CrossEntropyLoss()
