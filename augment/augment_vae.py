@@ -9,7 +9,7 @@ from vae2 import VariationalAutoencoder
 
 type_ = 'processed' # 'raw' or 'processed'
 ratio = 0.3
-latent_dims = 64
+latent_dims = 50
 train_data = pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_train_data.csv')
 
 def vae_augment(train_data, type_, latent_dims, device):
@@ -17,7 +17,7 @@ def vae_augment(train_data, type_, latent_dims, device):
     
     # Initialize vae
     vae = VariationalAutoencoder(latent_dims, device)
-    vae.load_state_dict(torch.load(f"../saved_models/{type_}_data/vae_model_state_dict_CC.pth", map_location=torch.device('cpu')))
+    vae.load_state_dict(torch.load(f"../saved_models/vae_model_state_dict_CC.pth", map_location=torch.device('cpu')))
     
     vae.eval()
 
@@ -29,10 +29,10 @@ def vae_augment(train_data, type_, latent_dims, device):
         if i % int(0.1 * length) == 0:
             print("[", i, f"/{length}]")
         
-        true_spectrum = train_data.iloc[i, :-1].values
-        fake_spectrum = vae(torch.Tensor(true_spectrum, dtype=torch.float32()).unsqueeze(0))
+        true_spectrum = list(train_data.iloc[i, :-1].to_numpy())
+        fake_spectrum = vae(torch.Tensor(true_spectrum).float().unsqueeze(0))
 
-        spectra_array[i, :] = fake_spectrum
+        spectra_array[i, :] = fake_spectrum.detach()
 
     df2 = pd.DataFrame(spectra_array, columns=train_data.columns[:-1])
     df2['labels'] = list(labels.to_numpy())
