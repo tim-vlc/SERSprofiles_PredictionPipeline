@@ -5,17 +5,17 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-
 from cnn import CNN
-
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 type_ = 'processed'
-input_size = 851
+input_size = 1650 if type_ == 'raw' else 851
+ratio = 0.3
 
-train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/complete_train_data.csv')
-test_data = pd.read_csv(f'../../CSVs/processed_data/test_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/complete_test_data.csv')
+train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_train_data.csv')
+test_data = pd.read_csv(f'../../CSVs/processed_data/test_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_test_data.csv')
+#test_data = pd.read_csv(f'../../CSVs/processed_data/{ratio}complete_test_data.csv')
 
 device = torch.device("cuda:0")
 
@@ -77,30 +77,29 @@ for epoch in range(ep):
         optimizer.step()
         
         running_loss += loss.item()
+        torch.cuda.empty_cache()
     
     # Print the average loss for the epoch
     avg_loss = running_loss / (len(X_train) / batch)
     print(f'Epoch [{epoch+1}/{ep}], Loss: {avg_loss:.4f}')
 
-
 # Calculate the accuracy
 correct = 0
 total = 0
-raw_outputs = []
-prediction_list = []
-labels_list=[]
 
-outputs = (model(X_test.clone().detach().float().to(device))).detach().cpu().numpy()
-predicted = np.argmax(outputs, 1)
+with torch.no_grad():
+    for i in range(0, len(X_test), batch):
+        batch_X = X_test[i:i+batch].clone().detach().float().to(device)
+        batch_y = y_test[i:i+batch].clone()
+        outputs = (model(batch_X)).detach().cpu().numpy()
 
-truth = np.argmax(y_test, 1).detach().numpy()
+        torch.cuda.empty_cache()
 
-total += truth.shape[0]
-correct += (predicted == truth).sum().item()
+        predicted = np.argmax(outputs, 1)
+        truth = np.argmax(batch_y, 1).detach().numpy()
 
-raw_outputs.append(outputs)
-prediction_list.append(predicted)
-labels_list.append(truth)
+        total += truth.shape[0]
+        correct += (predicted == truth).sum().item()
 
 print('Accuracy of the network on the test data: %f %%' % (
     100 * correct / total))

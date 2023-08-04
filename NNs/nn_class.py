@@ -12,10 +12,10 @@ from nn import NN
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 train_type = 'processed' # 'processed' or 'augmented'
-input_size = 851
+input_size = 1650 if train_type == 'raw' else 851
 
-train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv') if train_type == 'augmented' else pd.read_csv('../../CSVs/processed_data/complete_train_data.csv')
-test_data = pd.read_csv('../../CSVs/processed_data/complete_test_data.csv')
+train_data = pd.read_csv(f'../../CSVs/augmented_data/gan_train_data.csv') if train_type == 'augmented' else pd.read_csv(f'../../CSVs/{train_type}_data/complete_train_data.csv')
+test_data = pd.read_csv(f'../../CSVs/{train_type}_data/complete_test_data.csv')
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
 X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
@@ -91,25 +91,23 @@ for epoch in range(ep):
     avg_loss = running_loss / (len(X_train) / batch)
     print(f'Epoch [{epoch+1}/{ep}], Loss: {avg_loss:.4f}')
 
-
 # Calculate the accuracy
 correct = 0
 total = 0
-raw_outputs = []
-prediction_list = []
-labels_list=[]
 
-outputs = (model(X_test.clone().detach().float().to(device))).detach().cpu().numpy()
-predicted = np.argmax(outputs, 1)
+with torch.no_grad():
+    for i in range(0, len(X_test), batch):
+        batch_X = X_test[i:i+batch].clone().detach().float().to(device)
+        batch_y = y_test[i:i+batch].clone()
+        outputs = (model(batch_X)).detach().cpu().numpy()
 
-truth = np.argmax(y_test, 1).detach().numpy()
+        torch.cuda.empty_cache()
 
-total += truth.shape[0]
-correct += (predicted == truth).sum().item()
+        predicted = np.argmax(outputs, 1)
+        truth = np.argmax(batch_y, 1).detach().numpy()
 
-raw_outputs.append(outputs)
-prediction_list.append(predicted)
-labels_list.append(truth)
+        total += truth.shape[0]
+        correct += (predicted == truth).sum().item()
 
 print('Accuracy of the network on the test data: %f %%' % (
     100 * correct / total))

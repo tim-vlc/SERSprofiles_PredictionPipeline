@@ -10,22 +10,24 @@ from gan import Generator, Discriminator
 import ramanspy as rp
 from ramanspy import Spectrum
 
-train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
+type_ = 'processed' # 'raw' or 'processed'
+ratio = 0.5
+train_data = pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_train_data.csv')
 
 pipe = rp.preprocessing.Pipeline([
     rp.preprocessing.denoise.SavGol(window_length=14, polyorder=3),
 ])
 
-def gan_augment(label, train_data, num_aug, ratio_dict, pipe):
+def gan_augment(label, train_data, num_aug, ratio_dict, pipe, ratio, type_):
     num_pixels = len(train_data.columns) - 1
-    grade = ratio_dict[label]
+    grade = 0.1 #ratio_dict[label]
     
     # Initialize generator and discriminator
-    generator = Generator()
-    generator.load_state_dict(torch.load(f"../saved_models/{label}_gen_model.pth", map_location=torch.device('cpu')))
+    generator = Generator(num_pixels)
+    generator.load_state_dict(torch.load(f"../saved_models/{type_}_data/{ratio}{label}_gen_model.pth", map_location=torch.device('cpu')))
 
-    discriminator = Discriminator()
-    discriminator.load_state_dict(torch.load(f"../saved_models/{label}_disc_model.pth", map_location=torch.device('cpu')))
+    discriminator = Discriminator(num_pixels)
+    discriminator.load_state_dict(torch.load(f"../saved_models/{type_}_data/{ratio}{label}_disc_model.pth", map_location=torch.device('cpu')))
     
     generator.eval()
 
@@ -54,9 +56,9 @@ def gan_augment(label, train_data, num_aug, ratio_dict, pipe):
     train_data = pd.concat([train_data, df2], axis=0).copy()
     return train_data
 
-labels = ['IHG', 'ILG', 'MCN', 'SCA', 'PC']
+labels = ['IHG', 'IMG', 'ILG', 'MMG', 'MLG', 'SCA', 'PC']
 length_data = len(train_data)
-augment_num = 30000
+augment_num = 14800
 ratio_dict = {'IHG':0.9, 'ILG':0.6, 'MCN':0.9, 'SCA':0.8, 'PC':0.9}
 
 len_dict = ((train_data['labels'].value_counts() * augment_num) / length_data).to_dict()
@@ -64,7 +66,7 @@ print(len_dict)
 for label in labels:
     length = len_dict[label]
 
-    train_data = gan_augment(label, train_data, int(length), ratio_dict, pipe)
+    train_data = gan_augment(label, train_data, int(length), ratio_dict, pipe, ratio, type_)
 
 train_data.to_csv('../../CSVs/augmented_data/gan_train_data.csv', index=False)
 print(len(train_data))

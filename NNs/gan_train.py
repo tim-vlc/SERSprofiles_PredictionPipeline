@@ -10,11 +10,14 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 from gan import Generator, Discriminator, train
 
-train_data = pd.read_csv('../../CSVs/processed_data/train_data.csv')
+ratio = 0.5
+type_ = 'processed'
+pixel_num = 1650 if type_ == 'raw' else 851
+train_data = pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_train_data.csv')
 
-labels = ['IHG', 'ILG', 'MCN', 'SCA', 'PC']
+labels = ['IHG', 'IMG', 'ILG', 'MMG', 'MLG', 'SCA', 'PC']
 
-def train_gan(label, train_data):
+def train_gan(label, train_data, type_, ratio, pixel_num):
     print(f"Getting the {label} dataframe...")
     df = train_data[train_data['labels']==label]
     df[df.columns[-1]] = 0
@@ -44,8 +47,8 @@ def train_gan(label, train_data):
 
     # Initialize generator and discriminator
     device = torch.device("cuda:0")
-    generator = Generator().to(device)
-    discriminator = Discriminator().to(device)
+    generator = Generator(pixel_num).to(device)
+    discriminator = Discriminator(pixel_num).to(device)
 
     # Loss function
     criterion = nn.BCELoss().to(device)
@@ -59,11 +62,11 @@ def train_gan(label, train_data):
     print(f"Training the {label} GAN model...")
     train(generator, discriminator, train_loader, EPOCHS, criterion, discriminator_optimizer, generator_optimizer, g_loss, d_loss, device)
     print("Done!")
-    torch.save(generator.state_dict(), f"../saved_models/{label}_gen_model.pth")
-    torch.save(discriminator.state_dict(), f"../saved_models/{label}_disc_model.pth")
+    torch.save(generator.state_dict(), f"../saved_models/{type_}_data/{ratio}{label}_gen_model.pth")
+    torch.save(discriminator.state_dict(), f"../saved_models/{type_}_data/{ratio}{label}_disc_model.pth")
 
-label = 'PC'
-train_gan(label, train_data)
+#label = 'PC'
+#train_gan(label, train_data)
 
-#for label in labels:
-#     train_gan(label, train_data)
+for label in labels:
+     train_gan(label, train_data, type_, ratio, pixel_num)

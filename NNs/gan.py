@@ -4,7 +4,7 @@ import numpy as np
 
 # Generator model
 class Generator(nn.Module):
-    def __init__(self):
+    def __init__(self, pixel_num):
         super(Generator, self).__init__()
 
         self.model = nn.Sequential(
@@ -16,7 +16,7 @@ class Generator(nn.Module):
             nn.BatchNorm1d(256),
             nn.Linear(256, 708),
             nn.LeakyReLU(0.2),
-            nn.Linear(708, 851),
+            nn.Linear(708, pixel_num),
             nn.Tanh()
         )
 
@@ -25,11 +25,11 @@ class Generator(nn.Module):
 
 # Discriminator model
 class Discriminator(nn.Module):
-    def __init__(self):
+    def __init__(self, pixel_num):
         super(Discriminator, self).__init__()
 
         self.model = nn.Sequential(
-            nn.Linear(851, 1608),
+            nn.Linear(pixel_num, 1608),
             nn.LeakyReLU(0.2),
             nn.Linear(1608, 64),
             nn.LeakyReLU(0.2),
