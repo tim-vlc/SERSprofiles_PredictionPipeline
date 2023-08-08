@@ -10,24 +10,34 @@ from cnn import CNN
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 type_ = 'processed'
-input_size = 1650 if type_ == 'raw' else 851
-ratio = 0.3
+input_size = 1650 if type_ == 'raw' else 601 #851
+ratio = 0.8
 
-train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_train_data.csv')
-test_data = pd.read_csv(f'../../CSVs/processed_data/test_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_test_data.csv')
+#train_data = pd.read_csv('../../CSVs/augmented_data/vae_train_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_train_data.csv').sample(frac=1).reset_index(drop=True)
+#test_data = pd.read_csv(f'../../CSVs/processed_data/test_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_test_data.csv')
 #test_data = pd.read_csv(f'../../CSVs/processed_data/{ratio}complete_test_data.csv')
+
+data = pd.read_csv('../../complete_processed_data.csv')
+data.dropna(inplace=True)
+# Randomly select 80% of the data
+train_data = data.sample(frac=ratio, random_state=42)
+test_data = data.drop(train_data.index)
 
 device = torch.device("cuda:0")
 
-X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
-X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
+#replace_ = {'IMG':'ILG', 'MMG':'MCN', 'MLG':'MCN'}
+#train_data['labels'] = train_data['labels'].replace(replace_)
+#test_data['labels'] = test_data['labels'].replace(replace_)
+
+X_test, y_test = test_data.iloc[:,:-1], test_data['labels']
+X_train, y_train = train_data.iloc[:,:-1], train_data['labels']
 
 output_size = 7
 
 dropratio = 0.15
 alpha = 0.0001 # learning rate
 batch = 175
-ep = 30 # epoch
+ep = 50 # epoch
     
 model = CNN(input_size, output_size)
 model.to(device)

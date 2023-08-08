@@ -10,7 +10,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 from gan import Generator, Discriminator, train
 
-ratio = 0.5
+ratio = 0.2
 type_ = 'processed'
 pixel_num = 1650 if type_ == 'raw' else 851
 train_data = pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_train_data.csv')
@@ -19,8 +19,8 @@ labels = ['IHG', 'IMG', 'ILG', 'MMG', 'MLG', 'SCA', 'PC']
 
 def train_gan(label, train_data, type_, ratio, pixel_num):
     print(f"Getting the {label} dataframe...")
-    df = train_data[train_data['labels']==label]
-    df[df.columns[-1]] = 0
+    df = train_data[train_data['labels']==label].iloc[:, :-1]
+    df['labels'] = 0
     print("Done!")
 
     # Split the DataFrame into input features (spectra) and labels
@@ -28,7 +28,7 @@ def train_gan(label, train_data, type_, ratio, pixel_num):
     labels = df.iloc[:, -1].values   # Extract the last column
 
     # Convert the data to torch tensors
-    spectra_tensor = torch.tensor(spectra, dtype=torch.float32)
+    spectra_tensor = torch.from_numpy(spectra).float() #.float()
     labels = np.vstack(labels).astype(float)
     labels_tensor = torch.from_numpy(labels)
 
@@ -36,7 +36,7 @@ def train_gan(label, train_data, type_, ratio, pixel_num):
     dataset = TensorDataset(spectra_tensor, labels_tensor)
 
     # Set batch size and number of workers
-    batch_size = 20
+    batch_size = 21
     num_workers = 0
 
     # Create data loader
@@ -65,8 +65,8 @@ def train_gan(label, train_data, type_, ratio, pixel_num):
     torch.save(generator.state_dict(), f"../saved_models/{type_}_data/{ratio}{label}_gen_model.pth")
     torch.save(discriminator.state_dict(), f"../saved_models/{type_}_data/{ratio}{label}_disc_model.pth")
 
-#label = 'PC'
-#train_gan(label, train_data)
+label = 'PC'
+train_gan(label, train_data, type_, ratio, pixel_num)
 
-for label in labels:
-     train_gan(label, train_data, type_, ratio, pixel_num)
+#for label in labels:
+#     train_gan(label, train_data, type_, ratio, pixel_num)
