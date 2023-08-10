@@ -11,11 +11,21 @@ from nn import NN
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
+ratio = 0.8
 train_type = 'processed' # 'processed' or 'augmented'
 input_size = 1650 if train_type == 'raw' else 851
 
-train_data = pd.read_csv(f'../../CSVs/augmented_data/gan_train_data.csv') if train_type == 'augmented' else pd.read_csv(f'../../CSVs/{train_type}_data/complete_train_data.csv')
-test_data = pd.read_csv(f'../../CSVs/{train_type}_data/complete_test_data.csv')
+#train_data = pd.read_csv(f'../../CSVs/augmented_data/gan_train_data.csv') if train_type == 'augmented' else pd.read_csv(f'../../CSVs/{train_type}_data/complete_train_data.csv')
+#test_data = pd.read_csv(f'../../CSVs/{train_type}_data/complete_test_data.csv')
+
+#data = pd.read_csv('../../complete_processed_data.csv')
+#data.dropna(inplace=True)
+# Randomly select 80% of the data
+#train_data = data.sample(frac=ratio, random_state=42)
+#test_data = data.drop(train_data.index)
+#train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv').sample(frac=1.).reset_index(drop=True)
+test_data = pd.read_csv('../../CSVs/augmented_data/gan_test_data.csv')
+train_data = pd.read_csv('../../CSVs/augmented_data/prev_train_data.csv')
 
 X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
 X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
@@ -31,7 +41,7 @@ dense4_output = 20
 dropratio = 0.15
 alpha = 0.0001 # learning rate
 batch = 10
-ep = 30 # epoch
+ep = 50 # epoch
     
 model = NN(input_size, output_size, dense1_output, dense2_output, dense3_output, dense4_output, dropratio)
 model.to(device)
