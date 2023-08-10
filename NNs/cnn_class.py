@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 type_ = 'processed'
 input_size = 1650 if type_ == 'raw' else 851
-ratio = 0.8
+ratio = 0.9
 
 #train_data = pd.read_csv('../../CSVs/augmented_data/vae_train_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_train_data.csv').sample(frac=1).reset_index(drop=True)
 #test_data = pd.read_csv(f'../../CSVs/processed_data/test_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_test_data.csv')
