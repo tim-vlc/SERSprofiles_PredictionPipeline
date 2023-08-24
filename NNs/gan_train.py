@@ -10,7 +10,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 from gan import Generator, Discriminator, train
 
-ratio = 0.4
+ratio = 0.1
 type_ = 'processed'
 pixel_num = 1650 if type_ == 'raw' else 851
 #train_data = pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_train_data.csv')
@@ -41,8 +41,11 @@ def train_gan(label, train_data, type_, ratio, pixel_num):
     dataset = TensorDataset(spectra_tensor, labels_tensor)
 
     # Set batch size and number of workers
-    batch_size = 21
+    batch_size = 25
     num_workers = 0
+
+    if len(df) % batch_size == 1:
+        batch_size +=1
 
     # Create data loader
     train_loader = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, shuffle=True)
