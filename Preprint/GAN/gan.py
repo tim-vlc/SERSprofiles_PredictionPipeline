@@ -1,6 +1,4 @@
-import torch.nn as nn
-import torch
-import numpy as np
+from libraries import *
 
 # Generator model
 class Generator(nn.Module):
@@ -22,7 +20,7 @@ class Generator(nn.Module):
 
     def forward(self, x):
         return self.model(x)
-
+    
 # Discriminator model
 class Discriminator(nn.Module):
     def __init__(self, pixel_num):
@@ -90,3 +88,55 @@ def train(generator, discriminator, train_loader, num_epochs, criterion, discrim
         #        generate_and_save_images(generator, epoch + 1)
         if verbose:
             print(f"Epoch {epoch + 1}, Gen Loss: {g_loss[-1]}, Disc Loss: {d_loss[-1]}")
+
+def train_gan(label, train_data, verbose):
+    pixel_num = len(train_data.columns) - 1
+    print(f"Getting the {label} dataframe...")
+    df = train_data[train_data['labels']==label]
+    df.loc.__setitem__((slice(None), ('labels')), 0) 
+    print("Done!")
+
+    # Split the DataFrame into input features (spectra) and labels
+    spectra = df.iloc[:, :-1].values  # Extract all columns except the last one
+    labels = df['labels'].values   # Extract the last column
+
+    # Convert the data to torch tensors
+    spectra_tensor = torch.from_numpy(spectra).float()
+    labels = np.vstack(labels).astype(float)
+    labels_tensor = torch.from_numpy(labels)
+
+    # Create a TensorDataset
+    dataset = TensorDataset(spectra_tensor, labels_tensor)
+
+    # Set batch size and number of workers
+    batch_size = 25
+    num_workers = 0
+
+    if len(df) % batch_size == 1:
+        batch_size +=1
+
+    # Create data loader
+    train_loader = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, shuffle=True)
+
+    g_loss = []
+    d_loss = []
+
+    # Initialize generator and discriminator
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    generator = Generator(pixel_num).to(device)
+    discriminator = Discriminator(pixel_num).to(device)
+
+    # Loss function
+    criterion = nn.BCELoss().to(device)
+
+    # Optimizers
+    generator_optimizer = optim.Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999))
+    discriminator_optimizer = optim.Adam(discriminator.parameters(), lr=0.0002, betas=(0.5, 0.999))
+
+    # Train the model
+    EPOCHS = 60
+    print(f"Training the {label} GAN model...")
+    train(generator, discriminator, train_loader, EPOCHS, criterion, discriminator_optimizer, generator_optimizer, g_loss, d_loss, device, verbose)
+    print("Done!")
+    torch.save(generator.state_dict(), f"{label}_gen_model.pth")
+    torch.save(discriminator.state_dict(), f"{label}_disc_model.pth")
