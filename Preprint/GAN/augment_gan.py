@@ -17,7 +17,7 @@ def augment_gan(num_augment, train_set, test_set, verbose):
         # Generate fake spectra
         # ----------------------------------------------------------
         generator = Generator(num_pixels)
-        generator.load_state_dict(torch.load(f"saved_models/{label}_gen_model.pth", map_location=torch.device('cpu')))
+        generator.load_state_dict(torch.load(f"{label}_gen_model.pth", map_location=torch.device('cpu')))
 
         generator.eval()
 
