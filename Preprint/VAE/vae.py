@@ -1,10 +1,8 @@
 from libraries import *
 
 class VariationalEncoder(nn.Module):
-    def __init__(self, latent_dims, device, verbose):  
+    def __init__(self, latent_dims, device):  
         super(VariationalEncoder, self).__init__()
-        
-        self.verbose = verbose
 
         # 1st Convolutional Layer
         self.conv1 = nn.Sequential(
@@ -55,8 +53,9 @@ class Decoder(nn.Module):
         return z
     
 class VariationalAutoencoder(nn.Module):
-    def __init__(self, latent_dims, device):
+    def __init__(self, latent_dims, device, verbose):
         super(VariationalAutoencoder, self).__init__()
+        self.verbose = verbose
         self.encoder = VariationalEncoder(latent_dims, device)
         self.decoder = Decoder(latent_dims)
 
