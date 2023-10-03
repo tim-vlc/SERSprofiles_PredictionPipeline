@@ -28,7 +28,7 @@ def augment_gan(num_augment, train_set, test_set, verbose):
         fake_spectra = generator(noise).detach().numpy()
         fake_spectra = pipe.apply(Spectrum(fake_spectra, range(1, num_pixels))).spectral_data
 
-        df = pd.DataFrame(fake_spectra)
+        df = pd.DataFrame(fake_spectra, columns=train_set.columns.difference(['labels']))
         df['labels'] = label
         df_list.append(df)
     

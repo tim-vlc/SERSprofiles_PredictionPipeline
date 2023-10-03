@@ -66,7 +66,7 @@ def augment_vae(num_augment, df_all, split, num_epochs, verbose):
         fake_latent = torch.tensor(gaussian_vector.sample(num_samples).astype(np.float32))
         fake_spectra = vae.decoder(fake_latent).detach().numpy()
         
-        df = pd.DataFrame(fake_spectra)
+        df = pd.DataFrame(fake_spectra, columns=train_set.columns.difference(['labels']))
         df['labels'] = label
         df_list.append(df)
     
