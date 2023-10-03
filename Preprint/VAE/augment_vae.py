@@ -48,7 +48,7 @@ def augment_vae(num_augment, df_all, split, num_epochs, verbose):
 
     # Get distribution of Gaussian Vector per class
     # ----------------------------------------------------------
-    distribution_dict = get_distribution_labels(d, train_set, vae)
+    distribution_dict = get_distribution_labels(d, train_set, vae, device)
 
     # Generate fake spectra
     # ----------------------------------------------------------

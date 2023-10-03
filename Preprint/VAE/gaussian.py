@@ -16,9 +16,8 @@ class MultiDimensionalGaussian:
         samples = np.random.normal(self.means, np.sqrt(self.variances), size=(num_samples, len(self.means)))
         return samples
     
-def get_distribution_labels(d, train_set, vae):
+def get_distribution_labels(d, train_set, vae, device):
     distribution_dict = {}
-    device = vae.device
 
     for label in train_set['labels'].unique():
         class_df = train_set[train_set['labels']==label]
