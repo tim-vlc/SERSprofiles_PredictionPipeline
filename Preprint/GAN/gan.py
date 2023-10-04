@@ -89,7 +89,7 @@ def train(generator, discriminator, train_loader, num_epochs, criterion, discrim
         if verbose:
             print(f"Epoch {epoch + 1}, Gen Loss: {g_loss[-1]}, Disc Loss: {d_loss[-1]}")
 
-def train_gan(label, train_data, verbose):
+def train_gan(label, train_data, verbose, split):
     pixel_num = len(train_data.columns) - 1
     print(f"Getting the {label} dataframe...")
     df = train_data[train_data['labels']==label]
@@ -138,5 +138,5 @@ def train_gan(label, train_data, verbose):
     print(f"Training the {label} GAN model...")
     train(generator, discriminator, train_loader, EPOCHS, criterion, discriminator_optimizer, generator_optimizer, g_loss, d_loss, device, verbose)
     print("Done!")
-    torch.save(generator.state_dict(), f"{label}_gen_model.pth")
-    torch.save(discriminator.state_dict(), f"{label}_disc_model.pth")
+    torch.save(generator.state_dict(), f"{split}{label}_gen_model.pth")
+    torch.save(discriminator.state_dict(), f"{split}{label}_disc_model.pth")

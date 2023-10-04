@@ -1,6 +1,6 @@
 from gan import *
 
-def augment_gan(num_augment, train_set, test_set, verbose):
+def augment_gan(num_augment, train_set, test_set, verbose, split):
     num_pixels = len(train_set.columns) - 1
     pipe = rp.preprocessing.Pipeline([
         rp.preprocessing.denoise.SavGol(window_length=14, polyorder=3),
@@ -10,14 +10,14 @@ def augment_gan(num_augment, train_set, test_set, verbose):
     # Train
     # ----------------------------------------------------------
     for label in train_set.labels.unique():
-        train_gan(label, train_set, verbose)
+        train_gan(label, train_set, verbose, split)
         class_df = train_set[train_set['labels']==label]
         num_samples = int( (len(class_df)/len(test_set)) * num_augment )
 
         # Generate fake spectra
         # ----------------------------------------------------------
         generator = Generator(num_pixels)
-        generator.load_state_dict(torch.load(f"{label}_gen_model.pth", map_location=torch.device('cpu')))
+        generator.load_state_dict(torch.load(f"{split}{label}_gen_model.pth", map_location=torch.device('cpu')))
 
         generator.eval()
 
@@ -31,7 +31,11 @@ def augment_gan(num_augment, train_set, test_set, verbose):
         df = pd.DataFrame(fake_spectra, columns=train_set.columns.difference(['labels']))
         df['labels'] = label
         df_list.append(df)
+        break
     
+    print(train_set.shape)
+    print(df_list[1].shape)
+
     aug_set = pd.concat(df_list, axis=0)
 
     return aug_set

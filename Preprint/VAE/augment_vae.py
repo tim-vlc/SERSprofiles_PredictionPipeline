@@ -72,5 +72,7 @@ def augment_vae(num_augment, df_all, split, num_epochs, verbose):
     
     aug_set = pd.concat(df_list, axis=0)
 
+    torch.save(vae.state_dict(), f"{split}_vae.pth")
+
     return aug_set, train_set, test_set
     
