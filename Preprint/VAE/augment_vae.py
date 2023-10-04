@@ -39,12 +39,12 @@ def augment_vae(num_augment, df_all, split, num_epochs, verbose):
 
     # Train
     # ----------------------------------------------------------
-    for epoch in range(num_epochs):
-        train_loss = train_epoch(vae,device,X_train,optim_)
-        val_loss = test_epoch(vae,device,X_test)
-        torch.cuda.empty_cache()
-        if epoch % 1 == 0 and verbose:
-            print('\n EPOCH {}/{} \t train loss {:.3f} \t val loss {:.3f}'.format(epoch + 1, num_epochs,train_loss,val_loss))
+    # for epoch in range(num_epochs):
+    #     train_loss = train_epoch(vae,device,X_train,optim_)
+    #     val_loss = test_epoch(vae,device,X_test)
+    #     torch.cuda.empty_cache()
+    #     if epoch % 1 == 0 and verbose:
+    #         print('\n EPOCH {}/{} \t train loss {:.3f} \t val loss {:.3f}'.format(epoch + 1, num_epochs,train_loss,val_loss))
 
     # Get distribution of Gaussian Vector per class
     # ----------------------------------------------------------
