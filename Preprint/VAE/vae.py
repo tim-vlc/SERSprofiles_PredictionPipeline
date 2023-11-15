@@ -58,6 +58,7 @@ class VariationalAutoencoder(nn.Module):
         self.verbose = verbose
         self.encoder = VariationalEncoder(latent_dims, device)
         self.decoder = Decoder(latent_dims)
+        self.device = device
 
     def forward(self, x):
         # x = x.to(device)

@@ -13,7 +13,7 @@ def plot_latent_2D(X_test, y_test, vae, d, dimred, guess_labels):
             
             x_test = x.unsqueeze(0)
             x_latent = vae.encoder(x_test)
-            latent[i, :] = x_latent.detach().numpy()[0]
+            latent[i, :] = x_latent.detach().cpu().numpy()[0]
 
     # Assigning random color to each label
     if guess_labels:
@@ -51,7 +51,7 @@ def plot_latent_2D(X_test, y_test, vae, d, dimred, guess_labels):
 
     filename = 'latent2DGuess' if guess_labels else 'latent2DLabels'
 
-    plt.savefig('../images/' + filename + '.png')
+    plt.savefig('images/' + filename + '.png')
     
     return
 
