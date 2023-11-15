@@ -49,7 +49,7 @@ def plot_latent_2D(X_test, y_test, vae, d, dimred, guess_labels):
     legend_handles = [mpatches.Patch(color=color, label=label) for label, color in color_dict.items()]
     plt.legend(handles=legend_handles)
 
-    plt.show()
+    plt.savefig('../images/latent2D.png')
     
     return
 
@@ -91,7 +91,7 @@ def plot_latent_3D(X_test, y_test, vae, d):
     ax.view_init(elev=20, azim=30)
 
     # Display the plot
-    plt.show()
+    plt.savefig('../images/latent3D.png')
     
     return
 
@@ -113,4 +113,4 @@ def real_fake_spectra(reals, fakes, labels):
 
     # Show the plot
     plt.grid(True)
-    plt.show()
+    plt.savefig('../images/rf_spectra.png')

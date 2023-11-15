@@ -65,8 +65,6 @@ X_train, y_train, X_test, y_test = (torch.tensor(X_train.values), torch.tensor(y
 
 best_loss = float('inf')
 best_model_state_dict = None
-epochs_without_improvement = 0
-patience = 4
 
 # Train the CNN
 for epoch in range(ep):

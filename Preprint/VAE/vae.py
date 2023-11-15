@@ -9,7 +9,7 @@ class VariationalEncoder(nn.Module):
             nn.Conv1d(in_channels=1, out_channels=16, kernel_size=20, stride=1)
         )
 
-        self.fc1 = nn.Linear(27664, 512)
+        self.fc1 = nn.Linear(13312, 512)
         self.fc2 = nn.Linear(512, 256)
         self.fc3 = nn.Linear(256, 128)
         self.fc4 = nn.Linear(128, latent_dims)
@@ -43,7 +43,7 @@ class Decoder(nn.Module):
         self.fc1 = nn.Linear(latent_dims, 128)
         self.fc2 = nn.Linear(128, 256)
         self.fc3 = nn.Linear(256, 512)
-        self.fc4 = nn.Linear(512, 1748)
+        self.fc4 = nn.Linear(512, 851)
         
     def forward(self, z):
         z = F.relu(self.fc1(z))
