@@ -2,8 +2,8 @@ import os
 import pandas as pd
 
 # Specify the directory path where your CSV files are located
-directory_path = '../../CSVs'
-save_path = '../../CSVs/diabetes'
+directory_path = '../CSVs'
+save_path = '../CSVs/diabetes'
 
 # Get a list of all CSV files in the directory
 csv_files = [file for file in os.listdir(directory_path) if file.endswith('.csv')]
