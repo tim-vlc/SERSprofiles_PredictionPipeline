@@ -158,4 +158,4 @@ plt.xlabel('Predicted label')
 
 plt.title("Confusion matrix of trained CNN for Diabetes SERS Profiles")
 
-plt.savefig('confmat.png')
+plt.savefig('confmat_CNN_diabetes.png')

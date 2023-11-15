@@ -10,29 +10,33 @@ from nn import NN
 
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.metrics import confusion_matrix
+import seaborn as sn
+import matplotlib.pyplot as plt
 
 ratio = 0.8
 train_type = 'processed' # 'processed' or 'augmented'
 input_size = 1650 if train_type == 'raw' else 851
 
-#train_data = pd.read_csv(f'../../CSVs/augmented_data/gan_train_data.csv') if train_type == 'augmented' else pd.read_csv(f'../../CSVs/{train_type}_data/complete_train_data.csv')
-#test_data = pd.read_csv(f'../../CSVs/{train_type}_data/complete_test_data.csv')
+# IMPORT DATA
+path_to_file = '../../CSVs/diabetes.csv'
 
-#data = pd.read_csv('../../complete_processed_data.csv')
-#data.dropna(inplace=True)
-# Randomly select 80% of the data
-#train_data = data.sample(frac=ratio, random_state=42)
-#test_data = data.drop(train_data.index)
-#train_data = pd.read_csv('../../CSVs/augmented_data/gan_train_data.csv').sample(frac=1.).reset_index(drop=True)
-test_data = pd.read_csv('../../CSVs/augmented_data/gan_test_data.csv')
-train_data = pd.read_csv('../../CSVs/augmented_data/prev_train_data.csv')
+data = pd.read_csv(path_to_file)
 
-X_test, y_test = test_data.iloc[:,:-1], test_data.iloc[:,-1]
-X_train, y_train = train_data.iloc[:,:-1], train_data.iloc[:,-1]
+train_data = data.sample(frac=ratio, random_state=42)
+test_data = data.drop(train_data.index)
 
 device = torch.device("cuda:0")
 
-output_size = 7
+X_test, y_test = test_data.iloc[:,:-1], test_data['labels']
+X_train, y_train = train_data.iloc[:,:-1], train_data['labels']
+
+X_test, y_test = test_data.iloc[:,:-1], test_data['labels']
+X_train, y_train = train_data.iloc[:,:-1], train_data['labels']
+
+device = torch.device("cuda:0")
+
+output_size = 2
 dense1_output = 512
 dense2_output = 256
 dense3_output = 64
@@ -41,7 +45,7 @@ dense4_output = 20
 dropratio = 0.15
 alpha = 0.0001 # learning rate
 batch = 10
-ep = 50 # epoch
+ep = 10 # epoch
     
 model = NN(input_size, output_size, dense1_output, dense2_output, dense3_output, dense4_output, dropratio)
 model.to(device)
@@ -72,13 +76,6 @@ X_train, y_train, X_test, y_test = (torch.tensor(X_train.values), torch.tensor(y
 
 best_loss = float('inf')
 best_model_state_dict = None
-epochs_without_improvement = 0
-patience = 4
-
-best_loss = float('inf')
-best_model_state_dict = None
-epochs_without_improvement = 0
-patience = 20
 
 # Train the NN
 for epoch in range(ep):
@@ -105,16 +102,28 @@ for epoch in range(ep):
 correct = 0
 total = 0
 
+full_truth = np.array([])
+full_outputs = np.array([])
+full_predicted = np.array([])
+
 with torch.no_grad():
     for i in range(0, len(X_test), batch):
         batch_X = X_test[i:i+batch].clone().detach().float().to(device)
         batch_y = y_test[i:i+batch].clone()
         outputs = (model(batch_X)).detach().cpu().numpy()
 
+        if i == 0:
+            full_outputs = outputs
+        else:
+            full_outputs = np.concatenate((full_outputs, outputs))
+
         torch.cuda.empty_cache()
 
         predicted = np.argmax(outputs, 1)
         truth = np.argmax(batch_y, 1).detach().numpy()
+
+        full_predicted = np.concatenate((full_predicted, predicted))
+        full_truth = np.concatenate((full_truth, truth))
 
         total += truth.shape[0]
         correct += (predicted == truth).sum().item()
@@ -122,6 +131,39 @@ with torch.no_grad():
 print('Accuracy of the network on the test data: %f %%' % (
     100 * correct / total))
 
-print('Saving model')
-torch.save(model.state_dict(), f"../saved_models/nn_model.pth")
-print('Saved.')
+#print('Saving model')
+#torch.save(model.state_dict(), f"../saved_models/cnn_model.pth")
+#print('Saved.')
+
+raw_outputs = []
+prediction_list = []
+labels_list=[]
+
+raw_outputs.append(full_outputs)
+prediction_list.append(full_predicted)
+labels_list.append(full_truth)
+
+# Create a dictionary to map encoded labels to original labels
+label_mapping = dict(zip(full_truth, label_test))
+labels_sorted = dict(sorted(label_mapping.items())).values()
+
+probabilities = np.concatenate([np.asarray((i)) for i in raw_outputs])
+prediction_array = np.concatenate([np.asarray(i) for i in prediction_list])
+labels_array = np.concatenate([np.asarray(i) for i in labels_list])
+
+test_truth = np.argmax(y_test, 1)
+
+labels = list(np.unique(test_truth))
+
+confusion_array = confusion_matrix(labels_array, prediction_array, labels=labels, sample_weight=None, normalize=None)
+
+plt.figure(figsize = (10,7))
+sn.heatmap(confusion_array, annot=True, fmt='d',cmap="OrRd")
+plt.xticks([0.5,1.5],labels=labels_sorted)
+plt.yticks([0.45,1.45],labels=labels_sorted)
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
+
+plt.title("Confusion matrix of trained CNN for Diabetes SERS Profiles")
+
+plt.savefig('confmat_NN_diabetes.png')
