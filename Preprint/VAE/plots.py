@@ -17,7 +17,7 @@ def plot_latent_2D(X_test, y_test, vae, d, dimred, guess_labels):
 
     # Assigning random color to each label
     if guess_labels:
-        n_clusters = 5
+        n_clusters = 2
 
         # Predict the labels for the encoded samples
         clustering = GaussianMixture(n_components=n_clusters, covariance_type='full').fit(latent)
