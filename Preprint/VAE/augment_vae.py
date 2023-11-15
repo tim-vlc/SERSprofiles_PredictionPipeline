@@ -58,8 +58,8 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
         # Create an instance of the MultiDimensionalGaussian class
         gaussian_vector = MultiDimensionalGaussian(means, variances)
 
-        fake_latent = torch.tensor(gaussian_vector.sample(num_samples).astype(np.float32))
-        fake_spectra = vae.decoder(fake_latent).detach().numpy()
+        fake_latent = torch.tensor(gaussian_vector.sample(num_samples).astype(np.float32)).to(device)
+        fake_spectra = vae.decoder(fake_latent).detach().cpu().numpy()
         
         df = pd.DataFrame(fake_spectra, columns=train_set.columns.difference(['labels']))
         df['labels'] = label
