@@ -42,10 +42,10 @@ dense2_output = 256
 dense3_output = 64
 dense4_output = 20
 
-dropratio = 0.15
+dropratio = 0.1
 alpha = 0.0001 # learning rate
-batch = 10
-ep = 10 # epoch
+batch = 80
+ep = 20 # epoch
     
 model = NN(input_size, output_size, dense1_output, dense2_output, dense3_output, dense4_output, dropratio)
 model.to(device)
