@@ -49,7 +49,9 @@ def plot_latent_2D(X_test, y_test, vae, d, dimred, guess_labels):
     legend_handles = [mpatches.Patch(color=color, label=label) for label, color in color_dict.items()]
     plt.legend(handles=legend_handles)
 
-    plt.savefig('../images/latent2D.png')
+    filename = 'latent2DGuess' if guess_labels else 'latent2DLabels'
+
+    plt.savefig('../images/' + filename + '.png')
     
     return
 
