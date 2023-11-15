@@ -55,7 +55,7 @@ class CNN(nn.Module):
         return x
     
 # FUNCTION FOR TRAINING AND EVALUATING NN
-def NeuralNetwork(train_data, test_data):
+def ConvolutionalNeuralNetwork(train_data, test_data):
     X_test, y_test = test_data.iloc[:,:-1], test_data['labels']
     X_train, y_train = train_data.iloc[:,:-1], train_data['labels']
     
@@ -64,7 +64,6 @@ def NeuralNetwork(train_data, test_data):
     
     output_size = 2
 
-    dropratio = 0.15
     alpha = 0.0001 # learning rate
     batch = 175
     ep = 10 # epoch

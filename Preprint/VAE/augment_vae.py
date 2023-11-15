@@ -3,19 +3,14 @@ from gaussian import *
 from plots import *
 from gaussian import MultiDimensionalGaussian, get_distribution_labels
 
-def augment_vae(num_augment, df_all, split, num_epochs, verbose):
+def augment_vae(num_augment, data, split, num_epochs, verbose):
     # Seperate Training and Test set
     # ----------------------------------------------------------
-    X = df_all.iloc[:, :-1]
-    y = df_all['labels']
+    train_set = data.sample(frac=split, random_state=42)
+    test_set = data.drop(train_set.index)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=split, random_state=100)
-
-    train_set = X_train.copy()
-    train_set['labels'] = y_train
-
-    test_set = X_test.copy()
-    test_set['labels'] = y_test
+    X_test = test_set.iloc[:,:-1]
+    X_train = train_set.iloc[:,:-1]
 
     X_train, X_test = torch.tensor(X_train.values), torch.tensor(X_test.values)
 
@@ -23,13 +18,13 @@ def augment_vae(num_augment, df_all, split, num_epochs, verbose):
     # ----------------------------------------------------------
     torch.manual_seed(0)
 
-    d = 32
+    d = 64
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
     vae = VariationalAutoencoder(latent_dims=d, device=device, verbose=verbose)
 
-    lr = 1e-3 
+    lr = 1e-4
 
     optim_ = torch.optim.Adam(vae.parameters(), lr=lr, weight_decay=1e-5)
 
@@ -39,12 +34,12 @@ def augment_vae(num_augment, df_all, split, num_epochs, verbose):
 
     # Train
     # ----------------------------------------------------------
-    # for epoch in range(num_epochs):
-    #     train_loss = train_epoch(vae,device,X_train,optim_)
-    #     val_loss = test_epoch(vae,device,X_test)
-    #     torch.cuda.empty_cache()
-    #     if epoch % 1 == 0 and verbose:
-    #         print('\n EPOCH {}/{} \t train loss {:.3f} \t val loss {:.3f}'.format(epoch + 1, num_epochs,train_loss,val_loss))
+    for epoch in range(num_epochs):
+        train_loss = train_epoch(vae,device,X_train,optim_)
+        val_loss = test_epoch(vae,device,X_test)
+        torch.cuda.empty_cache()
+        if epoch % 1 == 0 and verbose:
+            print('\n EPOCH {}/{} \t train loss {:.3f} \t val loss {:.3f}'.format(epoch + 1, num_epochs,train_loss,val_loss))
 
     # Get distribution of Gaussian Vector per class
     # ----------------------------------------------------------

@@ -27,9 +27,9 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
 
         self.model = nn.Sequential(
-            nn.Linear(pixel_num, 1608),
+            nn.Linear(pixel_num, 813),
             nn.LeakyReLU(0.2),
-            nn.Linear(1608, 64),
+            nn.Linear(813, 64),
             nn.LeakyReLU(0.2),
             nn.Linear(64, 64),
             nn.LeakyReLU(0.2),
