@@ -26,7 +26,7 @@ res_array = np.zeros((len(splits), 4))
 for i, split in enumerate(splits):
     num_augment = int(split * len(df_all))
     VAEaug_set, train_set, test_set = augment_vae(num_augment, df_all, split, 1, True)
-    GANaug_set = augment_gan(num_augment, train_set, test_set, True)
+    GANaug_set = augment_gan(num_augment, train_set, test_set, True, split)
     acc = ConvolutionalNeuralNetwork(train_set, test_set)
     VAE_acc = ConvolutionalNeuralNetwork(VAEaug_set, test_set)
     GAN_acc = ConvolutionalNeuralNetwork(GANaug_set, test_set)
