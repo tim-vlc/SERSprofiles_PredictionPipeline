@@ -14,46 +14,27 @@ import matplotlib.pyplot as plt
 
 type_ = 'processed'
 input_size = 1650 if type_ == 'raw' else 851
-ratio = 0.9
+ratio = 0.8
 
-#train_data = pd.read_csv('../../CSVs/augmented_data/vae_train_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_train_data.csv').sample(frac=1).reset_index(drop=True)
-#test_data = pd.read_csv(f'../../CSVs/processed_data/test_data.csv') if type_ == 'augmented' else pd.read_csv(f'../../CSVs/{type_}_data/{ratio}complete_test_data.csv')
-#test_data = pd.read_csv(f'../../CSVs/processed_data/{ratio}complete_test_data.csv')
+# IMPORT DATA
+path_to_file = '../../CSVs/diabetes.csv'
 
-#data = pd.read_csv('../../complete_processed_data.csv')
-#print(len(data))
-#data.dropna(inplace=True)
-# Randomly select 80% of the data
-#train_data = data.sample(frac=ratio, random_state=42)
-#print(len(train_data))
-#test_data = data.drop(train_data.index)
-#test_data.to_csv('../../test_data.csv', index=False)
+data = pd.read_csv(path_to_file)
 
-train_data = pd.read_csv('../../binary/train_binary.csv').sample(frac=1.).reset_index(drop=True)
-test_data = pd.read_csv('../../binary/test_binary.csv')
-
-#train_data = pd.read_csv(f'../../CSVs/augmented_data/{ratio}gan_train_data.csv').sample(frac=1.).reset_index(drop=True)
-#test_data = pd.read_csv(f'../../CSVs/augmented_data/{ratio}gan_test_data.csv')
-#train_data = pd.read_csv(f'../../CSVs/augmented_data/{ratio}prev_train_data.csv')
-
-print(test_data.shape)
-print(train_data['labels'].unique())
+train_data = data.sample(frac=ratio, random_state=42)
+test_data = data.drop(train_data.index)
 
 device = torch.device("cuda:0")
 
-#replace_ = {'IMG':'ILG', 'MMG':'MCN', 'MLG':'MCN'}
-#train_data['labels'] = train_data['labels'].replace(replace_)
-#test_data['labels'] = test_data['labels'].replace(replace_)
-
-X_test, y_test = test_data.iloc[:,:-2], test_data['labels']
-X_train, y_train = train_data.iloc[:,:-2], train_data['labels']
+X_test, y_test = test_data.iloc[:,:-1], test_data['labels']
+X_train, y_train = train_data.iloc[:,:-1], train_data['labels']
 
 output_size = 2
 
 dropratio = 0.15
 alpha = 0.0001 # learning rate
 batch = 175
-ep = 70 # epoch
+ep = 10 # epoch
     
 model = CNN(input_size, output_size)
 model.to(device)
@@ -175,6 +156,6 @@ plt.yticks([0.45,1.45],labels=labels_sorted)
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
 
-plt.title("Confusion matrix of trained CNN for Pancreatic Cyst exosome SERS profiles")
+plt.title("Confusion matrix of trained CNN for Diabetes SERS Profiles")
 
 plt.savefig('confmat.png')
