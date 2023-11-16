@@ -26,15 +26,11 @@ def augment_gan(num_augment, train_set, test_set, verbose, split):
 
         # Generate fake images
         fake_spectra = generator(noise).detach().numpy()
-        fake_spectra = pipe.apply(Spectrum(fake_spectra, range(1, num_pixels))).spectral_data
+        fake_spectra = pipe.apply(Spectrum(fake_spectra, range(num_pixels))).spectral_data
 
         df = pd.DataFrame(fake_spectra, columns=train_set.columns.difference(['labels']))
         df['labels'] = label
         df_list.append(df)
-        break
-    
-    print(train_set.shape)
-    print(df_list[1].shape)
 
     aug_set = pd.concat(df_list, axis=0)
 
