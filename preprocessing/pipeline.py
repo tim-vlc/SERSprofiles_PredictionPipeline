@@ -23,13 +23,10 @@ import matplotlib.patches as mpatches
 import warnings
 warnings.filterwarnings("ignore")
 
-df_all = pd.read_csv('UgurData/Fig3/Fig_3f/Fig3f_Drive/data.csv',header=None)
-df_all = df_all.clip(lower=0)
-labels = pd.read_csv('UgurData/Fig3/Fig_3f/Fig3f_Drive/labels.csv',header=None)
-df_all['labels']=labels[0]
+df_all = pd.read_csv('../../CSVs/diabetes_raw.csv')
 
 # Splitting our data
-X = df_all.iloc[:, :-1]
+X = df_all.iloc[:, :-2]
 y = df_all['labels']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=100) # 25% test by default
