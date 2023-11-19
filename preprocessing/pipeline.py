@@ -95,9 +95,9 @@ def preprocess_metrics(train_set, test_set):
                 'MaxIntensity':rp.preprocessing.normalise.MaxIntensity(),
                 'AUC':rp.preprocessing.normalise.AUC()}
     
-    smoothlist = __builtins__.list(smoothdict.keys()) + ['None']
-    bclist = __builtins__.list(bcdict.keys()) + ['None']
-    normlist = __builtins__.list(normdict.keys()) + ['None']
+    smoothlist = ['None'] + __builtins__.list(smoothdict.keys())
+    bclist = ['None'] + __builtins__.list(bcdict.keys())
+    normlist = ['None'] + __builtins__.list(normdict.keys())
     
     X_train, y_train = train_set.iloc[:, :-1], train_set['labels']
     X_test, y_test = test_set.iloc[:, :-1], test_set['labels']
@@ -117,14 +117,14 @@ def preprocess_metrics(train_set, test_set):
                              'F1 score': f1, 'Confusion Matrix':conf_mat})
     df_list = [df]
     
-    for smoothmeth in smoothlist:
-        for bcmeth in bclist:
-            for normmeth in normlist:
-                processing_method = smoothmeth + '-' + bcmeth + '-' + normmeth
+    for smooth in smoothlist:
+        for bc in bclist:
+            for norm in normlist:
+                processing_method = smooth + '-' + bc + '-' + norm
                 
-                smoothmeth = None if smoothmeth == 'None' else smoothmeth
-                bcmeth = None if bcmeth == 'None' else bcmeth
-                normmeth = None if normmeth == 'None' else normmeth
+                smoothmeth = None if smooth == 'None' else smooth
+                bcmeth = None if bc == 'None' else bc
+                normmeth = None if norm == 'None' else norm
                 
                 train_processed = preprocess(train_set, lb, ub, pixel_num, smoothmeth=smoothmeth, bcmeth=bcmeth, normmeth=normmeth)
                 test_processed = preprocess(test_set, lb, ub, pixel_num, smoothmeth=smoothmeth, bcmeth=bcmeth, normmeth=normmeth)
