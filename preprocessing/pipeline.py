@@ -77,8 +77,8 @@ def create_pipeline(lb, ub, smoothmeth, bcmeth, normmeth):
     return pipe
 
 def preprocess_metrics(train_set, test_set):
-    lb, ub = 0, 730       # upper and lower bounds for cropping
-    pixel_num = 1130
+    lb, ub = 150, 1000       # upper and lower bounds for cropping
+    pixel_num = 1650
 
     smoothdict = {'SavGol':rp.preprocessing.denoise.SavGol(window_length=22, polyorder=5), 
                   'Whittaker':rp.preprocessing.denoise.Whittaker(),
