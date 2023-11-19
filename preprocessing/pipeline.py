@@ -24,6 +24,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 df_all = pd.read_csv('../../CSVs/diabetes_raw.csv')
+df_all.dropna(inplace=True)
 
 # Splitting our data
 X = df_all.iloc[:, :-2]
@@ -109,12 +110,12 @@ def preprocess_metrics(train_set, test_set):
     conf_mat = confusion_matrix(predictions, y_test).ravel()
     acc = accuracy_score(y_test, predictions)
     f1 = f1_score(predictions, y_test, average='weighted')
+
+    print('Raw', acc, f1)
     
     df = pd.DataFrame({'processing_methods':'Raw', 'accuracy':acc, 
                              'F1 score': f1, 'Confusion Matrix':conf_mat})
     df_list = [df]
-    
-    
     
     for smoothmeth in smoothlist:
         for bcmeth in bclist:
@@ -132,6 +133,9 @@ def preprocess_metrics(train_set, test_set):
                 
                 X_train, y_train = train_processed.iloc[:, :-1], train_processed['labels']
                 X_test, y_test = test_processed.iloc[:, :-1], test_processed['labels']
+
+                del train_processed
+                del test_processed
                 
                 clf = QuadraticDiscriminantAnalysis()
                 clf.fit(X_train, y_train)
@@ -141,10 +145,19 @@ def preprocess_metrics(train_set, test_set):
                 conf_mat = confusion_matrix(predictions, y_test).ravel()
                 acc = accuracy_score(y_test, predictions)
                 f1 = f1_score(predictions, y_test, average='weighted')
+
+                print(processing_method, acc, f1)
                 
                 df = pd.DataFrame({'processing_methods':processing_method, 'accuracy':acc, 
                              'F1 score': f1, 'Confusion Matrix':conf_mat})
                 df_list.append(df)
+
+                # RELEASE MEMORY
+                del df
+                del predictions
+                del conf_mat
+                del X_train, y_train
+                del X_test, y_test
                 
     score_df = pd.concat(df_list, axis=0)
                 
