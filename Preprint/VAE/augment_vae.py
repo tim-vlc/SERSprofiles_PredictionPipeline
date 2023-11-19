@@ -13,6 +13,8 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
     train_set = data.sample(frac=split, random_state=42)
     test_set = data.drop(train_set.index)
 
+    num_pixels = len(train_set.columns) - 1
+
     X_test = test_set.iloc[:,:-1]
     X_train = train_set.iloc[:,:-1]
 
@@ -65,7 +67,7 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
         with torch.no_grad():
             fake_latent = torch.tensor(gaussian_vector.sample(num_samples).astype(np.float32)).to(device)
             fake_spectra = vae.decoder(fake_latent).detach().cpu().numpy()
-            fake_spectra = pipe.apply(Spectrum(fake_spectra, range(len(fake_spectra)))).spectral_data
+            fake_spectra = pipe.apply(Spectrum(fake_spectra, range(num_pixels))).spectral_data
         
         df = pd.DataFrame(fake_spectra, columns=train_set.columns.difference(['labels']))
         df['labels'] = label
