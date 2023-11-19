@@ -38,8 +38,8 @@ train_set['labels'] = y_train
 test_set = X_test.copy()
 test_set['labels'] = y_test
 
-print(train_set.dtypes)
-print(test_set.dtypes)
+print(type(train_set))
+print(type(test_set))
 
 def create_pipeline(lb, ub, smoothmeth, bcmeth, normmeth):
     """
