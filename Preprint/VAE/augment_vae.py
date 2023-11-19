@@ -4,6 +4,10 @@ from plots import *
 from gaussian import MultiDimensionalGaussian, get_distribution_labels
 
 def augment_vae(num_augment, data, split, num_epochs, verbose):
+    pipe = rp.preprocessing.Pipeline([
+        rp.preprocessing.denoise.SavGol(window_length=14, polyorder=3),
+    ])
+
     # Seperate Training and Test set
     # ----------------------------------------------------------
     train_set = data.sample(frac=split, random_state=42)
@@ -58,14 +62,19 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
         # Create an instance of the MultiDimensionalGaussian class
         gaussian_vector = MultiDimensionalGaussian(means, variances)
 
-        fake_latent = torch.tensor(gaussian_vector.sample(num_samples).astype(np.float32)).to(device)
-        fake_spectra = vae.decoder(fake_latent).detach().cpu().numpy()
+        with torch.no_grad():
+            fake_latent = torch.tensor(gaussian_vector.sample(num_samples).astype(np.float32)).to(device)
+            fake_spectra = vae.decoder(fake_latent).detach().cpu().numpy()
+            fake_spectra = pipe.apply(Spectrum(fake_spectra, range(len(fake_spectra)))).spectral_data
         
         df = pd.DataFrame(fake_spectra, columns=train_set.columns.difference(['labels']))
         df['labels'] = label
         df_list.append(df)
-    
+        del df
+        del fake_spectra
+
     aug_set = pd.concat(df_list, axis=0)
+    del df_list
 
     torch.save(vae.state_dict(), f"{split}_vae.pth")
 

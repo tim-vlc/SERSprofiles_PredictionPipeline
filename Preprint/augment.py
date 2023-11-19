@@ -34,6 +34,13 @@ for i, split in enumerate(splits):
         acci[j] = ConvolutionalNeuralNetwork(train_set, test_set)
         VAE_acci[j] = ConvolutionalNeuralNetwork(VAEaug_set, test_set)
         GAN_acci[j] = ConvolutionalNeuralNetwork(GANaug_set, test_set)
+
+        # RELEASE MEMORY
+        del VAEaug_set
+        del GANaug_set
+        del train_set
+        del test_set
+
     acc = np.mean(acci)
     VAE_acc = np.mean(VAE_acci)
     GAN_acc = np.mean(GAN_acci)
