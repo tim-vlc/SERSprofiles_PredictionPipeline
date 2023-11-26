@@ -26,6 +26,10 @@ warnings.filterwarnings("ignore")
 df_all = pd.read_csv('../../CSVs/diabetes_raw.csv')
 df_all.dropna(inplace=True)
 
+target_type = 'float32'
+col_to_convert = df_all.select_dtypes(include='float64').columns
+df_all[col_to_convert] = df_all[col_to_convert].astype(target_type)
+
 # Splitting our data
 X = df_all.iloc[:, :-2]
 y = df_all['labels']
@@ -124,7 +128,8 @@ def preprocess_metrics(train_set, test_set):
         for bc in bclist:
             for norm in normlist:
                 processing_method = smooth + '-' + bc + '-' + norm
-                
+                print(processing_method)
+
                 smoothmeth = None if smooth == 'None' else smooth
                 bcmeth = None if bc == 'None' else bc
                 normmeth = None if norm == 'None' else norm
@@ -149,7 +154,7 @@ def preprocess_metrics(train_set, test_set):
                 acc = accuracy_score(y_test, predictions)
                 f1 = f1_score(predictions, y_test, average='weighted')
 
-                print(processing_method, acc, f1)
+                print(acc, f1)
                 
                 df = pd.DataFrame({'processing_methods':processing_method, 'accuracy':acc, 
                              'F1 score': f1, 'Confusion Matrix':conf_mat})
@@ -186,7 +191,7 @@ def preprocess(data, lb, ub, pixel_num, smoothmeth=None, bcmeth=None, normmeth=N
     
     with alive_bar(length, force_tty=True) as bar:
         for j in range(length):
-            spectrum = Spectrum(data.iloc[j, :-1], range(pixel_num))
+            spectrum = Spectrum(data.iloc[j, :-1].to_numpy(), range(pixel_num))
             proc_spectrum = pipe.apply(spectrum).spectral_data
             spectra_array[j, :] = proc_spectrum
             bar()
