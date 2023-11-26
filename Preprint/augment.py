@@ -16,12 +16,12 @@ from augment_gan import *
 # labels = pd.read_csv('../../CVSs/preprocess_test/labels.csv',header=None)
 # df_all['labels']=labels[0]
 
-path_to_file = '../../CSVs/diabetes.csv'
+path_to_file = '../../CSVs/celllines_raw.csv'
 df_all = pd.read_csv(path_to_file)
 
-splits = np.arange(0.15, 0.9, 0.05)
+splits = np.arange(0.85, 0.10, -0.05)
 
-res_array = np.zeros((len(splits), 4))
+res_array = np.zeros((len(splits), 3))
 
 for i, split in enumerate(splits):
     acci = np.zeros(4)
