@@ -32,11 +32,11 @@ for i, split in enumerate(splits):
     for j in range(num_repeats):
         num_augment = int(2 * split * len(df_all))
         VAEaug_set, train_set, test_set = augment_vae(num_augment, df_all, split, 5, True)
-        GANaug_set = augment_gan(num_augment, train_set, test_set, True, split)
-        acci[j] = ConvolutionalNeuralNetwork(train_set, test_set)
         VAE_acci[j] = ConvolutionalNeuralNetwork(VAEaug_set, test_set)
+        GANaug_set = augment_gan(num_augment, train_set, test_set, True, split)
         GAN_acci[j] = ConvolutionalNeuralNetwork(GANaug_set, test_set)
-
+        acci[j] = ConvolutionalNeuralNetwork(train_set, test_set)
+        
         # RELEASE MEMORY
         del VAEaug_set
         del GANaug_set

@@ -5,7 +5,7 @@ from gaussian import MultiDimensionalGaussian, get_distribution_labels
 
 def augment_vae(num_augment, data, split, num_epochs, verbose):
     pipe = rp.preprocessing.Pipeline([
-        rp.preprocessing.denoise.SavGol(window_length=14, polyorder=3),
+        rp.preprocessing.denoise.SavGol(window_length=21, polyorder=3),
     ])
 
     # Seperate Training and Test set
@@ -24,7 +24,7 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
     # ----------------------------------------------------------
     torch.manual_seed(0)
 
-    d = 64
+    d = 2
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
