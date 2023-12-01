@@ -24,7 +24,7 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
     # ----------------------------------------------------------
     torch.manual_seed(0)
 
-    d = 10
+    d = 32
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
@@ -67,7 +67,7 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
 
         with torch.no_grad():
             rand = np.random.randint(0, len(latent))
-            fake_latent = latent[rand, :] + gaussian_vector.sample(num_samples).astype(np.float32)
+            fake_latent = latent[rand, :].astype(np.float32) + gaussian_vector.sample(num_samples).astype(np.float32)
             fake_latent = torch.tensor(fake_latent).to(device)
             fake_spectra = vae.decoder(fake_latent).detach().cpu().numpy()
             fake_spectra = pipe.apply(Spectrum(fake_spectra, range(num_pixels))).spectral_data

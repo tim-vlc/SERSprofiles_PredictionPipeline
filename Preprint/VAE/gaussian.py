@@ -40,7 +40,7 @@ def get_distribution_labels(d, train_set, vae, device):
         # latent_means = np.mean(latent, axis=0)
         latent_variances = np.var(latent, axis=0)
         
-        distribution_dict[label] = (np.zeros(len(latent)), latent_variances)
+        distribution_dict[label] = (np.zeros(d), latent_variances)
         latent_dict[label] = latent
 
     return distribution_dict, latent_dict

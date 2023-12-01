@@ -25,6 +25,7 @@ warnings.filterwarnings("ignore")
 
 df_all = pd.read_csv('../../CSVs/diabetes_raw.csv')
 df_all.dropna(inplace=True)
+print(df_all.info())
 
 target_type = 'float32'
 col_to_convert = df_all.select_dtypes(include='float64').columns

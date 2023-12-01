@@ -18,19 +18,20 @@ from augment_gan import *
 
 path_to_file = '../../CSVs/celllines.csv'
 df_all = pd.read_csv(path_to_file)
+print(df_all.head())
 
-splits = np.arange(0.85, 0.10, -0.05)
+splits = np.arange(0.80, 0.10, -0.05)
 print(splits)
 
 res_array = np.zeros((len(splits), 4))
-num_repeats = 1
+num_repeats = 4
 
 for i, split in enumerate(splits):
     acci = np.zeros(num_repeats)
     VAE_acci = np.zeros(num_repeats)
     GAN_acci = np.zeros(num_repeats)
     for j in range(num_repeats):
-        num_augment = int(2 * split * len(df_all))
+        num_augment = int(split * len(df_all))
         VAEaug_set, train_set, test_set = augment_vae(num_augment, df_all, split, 5, True)
         VAE_acci[j] = ConvolutionalNeuralNetwork(VAEaug_set, test_set)
         GANaug_set = augment_gan(num_augment, train_set, test_set, True, split)

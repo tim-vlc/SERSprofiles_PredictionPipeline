@@ -62,8 +62,8 @@ def ConvolutionalNeuralNetwork(train_data, test_data):
     input_size = len(train_data.columns) - 1
     output_size = len(y_train.unique())
 
-    alpha = 0.001 # learning rate
-    batch = 175
+    alpha = 0.0001 # learning rate
+    batch = 175 
     ep = 10 # epoch
 
     # Uses the gpu if available
