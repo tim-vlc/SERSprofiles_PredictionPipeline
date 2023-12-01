@@ -43,13 +43,13 @@ class Decoder(nn.Module):
         super(Decoder, self).__init__()
         
         self.fc1 = nn.Linear(latent_dims, 128)
-        self.fc3 = nn.Linear(128, 256)
+        self.fc2 = nn.Linear(128, 256)
         self.fc3 = nn.Linear(256, 512)
         self.fc4 = nn.Linear(512, 851)
         
     def forward(self, z):
         z = F.relu(self.fc1(z))
-        z = F.relu(self.fc3(z))
+        z = F.relu(self.fc2(z))
         z = F.relu(self.fc3(z))
         z = torch.tanh(self.fc4(z))
         return z
