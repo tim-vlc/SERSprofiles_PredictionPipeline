@@ -9,11 +9,12 @@ class VariationalEncoder(nn.Module):
             nn.Conv1d(in_channels=1, out_channels=16, kernel_size=20, stride=1)
         )
 
-        self.fc1 = nn.Linear(13312, 512)
-        self.fc2 = nn.Linear(512, 256)
-        self.fc3 = nn.Linear(256, 128)
-        self.fc4 = nn.Linear(128, latent_dims)
+        self.fc1 = nn.Linear(13312, 1024)
+        self.fc2 = nn.Linear(1024, 512)
+        self.fc3 = nn.Linear(512, 256)
+        self.fc4 = nn.Linear(256, 128)
         self.fc5 = nn.Linear(128, latent_dims)
+        self.fc6 = nn.Linear(128, latent_dims)
 
         self.N = torch.distributions.Normal(0, 1)
         self.kl = 0
@@ -28,8 +29,9 @@ class VariationalEncoder(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
-        mu = self.fc4(x)
-        sigma = torch.exp(self.fc5(x))
+        x = F.relu(self.fc4(x))
+        mu = self.fc5(x)
+        sigma = torch.exp(self.fc6(x))
         N = self.N.sample(mu.shape).clone().detach().to(self.device)
         z = mu + sigma * N
         self.kl = 0.0001 * (sigma**2 + mu**2 - torch.log(sigma) - 1/2).mean()
@@ -41,13 +43,13 @@ class Decoder(nn.Module):
         super(Decoder, self).__init__()
         
         self.fc1 = nn.Linear(latent_dims, 128)
-        self.fc2 = nn.Linear(128, 256)
+        self.fc3 = nn.Linear(128, 256)
         self.fc3 = nn.Linear(256, 512)
         self.fc4 = nn.Linear(512, 851)
         
     def forward(self, z):
         z = F.relu(self.fc1(z))
-        z = F.relu(self.fc2(z))
+        z = F.relu(self.fc3(z))
         z = F.relu(self.fc3(z))
         z = torch.tanh(self.fc4(z))
         return z

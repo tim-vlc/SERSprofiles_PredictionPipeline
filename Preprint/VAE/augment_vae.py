@@ -24,7 +24,7 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
     # ----------------------------------------------------------
     torch.manual_seed(0)
 
-    d = 2
+    d = 10
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
