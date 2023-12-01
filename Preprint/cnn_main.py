@@ -61,12 +61,10 @@ def ConvolutionalNeuralNetwork(train_data, test_data):
     
     input_size = len(train_data.columns) - 1
     output_size = len(y_train.unique())
-    
-    output_size = 2
 
-    alpha = 0.0001 # learning rate
-    batch = 50
-    ep = 15 # epoch
+    alpha = 0.001 # learning rate
+    batch = 175
+    ep = 10 # epoch
 
     # Uses the gpu if available
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

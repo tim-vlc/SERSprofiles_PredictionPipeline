@@ -10,7 +10,7 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
 
     # Seperate Training and Test set
     # ----------------------------------------------------------
-    train_set = data.sample(frac=split, random_state=42)
+    train_set = data.sample(frac=split)
     test_set = data.drop(train_set.index)
 
     num_pixels = len(train_set.columns) - 1

@@ -196,12 +196,12 @@ def preprocess(data, lb, ub, pixel_num, smoothmeth=None, bcmeth=None, normmeth=N
             spectra_array[j, :] = proc_spectrum
             bar()
 
-    df = pd.DataFrame(spectra_array, columns = __builtins__.list(range(num_pixels)))
-    df['labels'] = __builtins__.list(labels.to_numpy())
+    df = pd.DataFrame(spectra_array, columns = list(range(num_pixels)))
+    df['labels'] = list(labels.to_numpy())
     #df['patient#'] = list(patient_num.to_numpy())
     
     print('Finished preprocess!')
     
     return df
 
-preprocess_metrics(train_set, test_set).to_csv('PreprocessingMetrics.csv', index=False)
+# preprocess_metrics(train_set, test_set).to_csv('PreprocessingMetrics.csv', index=False)

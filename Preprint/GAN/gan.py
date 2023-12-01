@@ -134,7 +134,7 @@ def train_gan(label, train_data, verbose, split):
     discriminator_optimizer = optim.Adam(discriminator.parameters(), lr=0.0002, betas=(0.5, 0.999))
 
     # Train the model
-    EPOCHS = 60
+    EPOCHS = 30
     print(f"Training the {label} GAN model...")
     train(generator, discriminator, train_loader, EPOCHS, criterion, discriminator_optimizer, generator_optimizer, g_loss, d_loss, device, verbose)
     print("Done!")
