@@ -49,7 +49,7 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
 
     # Get distribution of Gaussian Vector per class
     # ----------------------------------------------------------
-    distribution_dict = get_distribution_labels(d, train_set, vae, device)
+    distribution_dict, latent_dict = get_distribution_labels(d, train_set, vae, device)
 
     # Generate fake spectra
     # ----------------------------------------------------------
@@ -60,12 +60,15 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
         class_df = train_set[train_set['labels']==label]
         num_samples = int( (len(class_df)/len(test_set)) * num_augment )
         means, variances = distribution_dict[label]
+        latent = latent_dict[label]
 
         # Create an instance of the MultiDimensionalGaussian class
         gaussian_vector = MultiDimensionalGaussian(means, variances)
 
         with torch.no_grad():
-            fake_latent = torch.tensor(gaussian_vector.sample(num_samples).astype(np.float32)).to(device)
+            rand = np.random.randint(0, len(latent))
+            fake_latent = latent[rand, :] + gaussian_vector.sample(num_samples).astype(np.float32)
+            fake_latent = torch.tensor(fake_latent).to(device)
             fake_spectra = vae.decoder(fake_latent).detach().cpu().numpy()
             fake_spectra = pipe.apply(Spectrum(fake_spectra, range(num_pixels))).spectral_data
         
@@ -74,6 +77,7 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
         df_list.append(df)
         del df
         del fake_spectra
+        del latent
 
     aug_set = pd.concat(df_list, axis=0)
     del df_list

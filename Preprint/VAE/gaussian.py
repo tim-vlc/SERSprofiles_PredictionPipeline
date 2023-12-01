@@ -18,6 +18,7 @@ class MultiDimensionalGaussian:
     
 def get_distribution_labels(d, train_set, vae, device):
     distribution_dict = {}
+    latent_dict = {}
 
     for label in train_set['labels'].unique():
         class_df = train_set[train_set['labels']==label]
@@ -36,9 +37,10 @@ def get_distribution_labels(d, train_set, vae, device):
                 x_test = x.unsqueeze(0)
                 x_latent = vae.encoder(x_test)
                 latent[i, :] = x_latent.detach().cpu().numpy()[0]
-        latent_means = np.mean(latent, axis=0)
+        # latent_means = np.mean(latent, axis=0)
         latent_variances = np.var(latent, axis=0)
         
-        distribution_dict[label] = (latent_means, latent_variances)
+        distribution_dict[label] = (np.zeros(len(latent)), latent_variances)
+        latent_dict[label] = latent
 
-    return distribution_dict
+    return distribution_dict, latent_dict
