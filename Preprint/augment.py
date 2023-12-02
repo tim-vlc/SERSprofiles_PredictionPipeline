@@ -16,7 +16,7 @@ from augment_gan import *
 # labels = pd.read_csv('../../CVSs/preprocess_test/labels.csv',header=None)
 # df_all['labels']=labels[0]
 
-path_to_file = '../../CSVs/celllines.csv'
+path_to_file = '../../CSVs/diabetes.csv'
 df_all = pd.read_csv(path_to_file)
 print(df_all.head())
 

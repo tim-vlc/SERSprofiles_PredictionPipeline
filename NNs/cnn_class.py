@@ -21,7 +21,7 @@ path_to_file = '../../CSVs/diabetes.csv'
 
 data = pd.read_csv(path_to_file)
 
-train_data = data.sample(frac=ratio, random_state=42)
+train_data = data.sample(frac=ratio)
 test_data = data.drop(train_data.index)
 
 device = torch.device("cuda:0")
