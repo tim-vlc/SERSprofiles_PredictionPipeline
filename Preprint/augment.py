@@ -24,7 +24,7 @@ splits = np.arange(0.80, 0.10, -0.05)
 print(splits)
 
 res_array = np.zeros((len(splits), 4))
-num_repeats = 3
+num_repeats = 4
 
 for i, split in enumerate(splits):
     acci = np.zeros(num_repeats)
@@ -44,11 +44,11 @@ for i, split in enumerate(splits):
         del train_set
         del test_set
 
-    acc = np.mean(acci)
-    VAE_acc = np.mean(VAE_acci)
-    GAN_acc = np.mean(GAN_acci)
+    acc = np.median(acci)
+    VAE_acc = np.median(VAE_acci)
+    GAN_acc = np.median(GAN_acci)
     print(acc, VAE_acc, GAN_acc)
     res_array[i, :] = np.array([split, acc, VAE_acc, GAN_acc])
 
 res_df = pd.DataFrame(res_array, columns=['test_percentage', 'acc', 'VAE_acc', 'GAN_acc'])
-res_df.to_csv('results_splits_celllines.csv')
+res_df.to_csv('results_splits_celllines2.csv')
