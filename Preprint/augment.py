@@ -16,17 +16,15 @@ from augment_gan import *
 # labels = pd.read_csv('../../CVSs/preprocess_test/labels.csv',header=None)
 # df_all['labels']=labels[0]
 
-path_to_file = '../../CSVs/diabetes.csv'
+path_to_file = '../../CSVs/celllines.csv'
 df_all = pd.read_csv(path_to_file)
 print(df_all.head())
 
 splits = np.arange(0.80, 0.10, -0.05)
 print(splits)
 
-splits = np.array([0.8])
-
 res_array = np.zeros((len(splits), 4))
-num_repeats = 1
+num_repeats = 3
 
 for i, split in enumerate(splits):
     acci = np.zeros(num_repeats)
@@ -53,6 +51,4 @@ for i, split in enumerate(splits):
     res_array[i, :] = np.array([split, acc, VAE_acc, GAN_acc])
 
 res_df = pd.DataFrame(res_array, columns=['test_percentage', 'acc', 'VAE_acc', 'GAN_acc'])
-res_df.to_csv('results_splits_diabetes.csv')
-train_set.to_parquet('train_set.parquet')
-test_set.to_parquet('test_set.parquet')
+res_df.to_csv('results_splits_celllines.csv')
