@@ -23,8 +23,10 @@ print(df_all.head())
 splits = np.arange(0.80, 0.10, -0.05)
 print(splits)
 
+splits = np.array([0.5])
+
 res_array = np.zeros((len(splits), 4))
-num_repeats = 4
+num_repeats = 1
 
 for i, split in enumerate(splits):
     acci = np.zeros(num_repeats)
@@ -44,11 +46,24 @@ for i, split in enumerate(splits):
         del train_set
         del test_set
 
-    acc = np.median(acci)
-    VAE_acc = np.median(VAE_acci)
-    GAN_acc = np.median(GAN_acci)
-    print(acc, VAE_acc, GAN_acc)
-    res_array[i, :] = np.array([split, acc, VAE_acc, GAN_acc])
+    acc_med = np.median(acci)
+    VAE_acc_med = np.median(VAE_acci)
+    GAN_acc_med = np.median(GAN_acci)
 
-res_df = pd.DataFrame(res_array, columns=['test_percentage', 'acc', 'VAE_acc', 'GAN_acc'])
+    acc_mean = np.mean(acci)
+    VAE_acc_mean = np.mean(VAE_acci)
+    GAN_acc_mean = np.mean(GAN_acci)
+
+    acc_var = np.var(acci)
+    VAE_acc_var = np.var(VAE_acci)
+    GAN_acc_var = np.var(GAN_acci)
+
+    print(acc_med, VAE_acc_med, GAN_acc_med)
+    res_array[i, :] = np.array([split, acc_med, VAE_acc_med, GAN_acc_med, 
+                                acc_mean, VAE_acc_mean, GAN_acc_mean,
+                                acc_var, VAE_acc_var, GAN_acc_var])
+
+res_df = pd.DataFrame(res_array, columns=['test_percentage', 'median acc', 'median VAE_acc', 'median GAN_acc',
+                                          'mean acc', 'mean VAE_acc', 'mean GAN_acc',
+                                          'var acc', 'var VAE_acc', 'var GAN_acc'])
 res_df.to_csv('results_splits_celllines2.csv')
