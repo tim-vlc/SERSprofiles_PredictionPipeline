@@ -6,7 +6,10 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
 
         self.model = nn.Sequential(
-            nn.Linear(1000, 512),
+            nn.Linear(1000, 1024),
+            nn.LeakyReLU(0.2),
+            nn.BatchNorm1d(1024),
+            nn.Linear(1024, 512),
             nn.LeakyReLU(0.2),
             nn.BatchNorm1d(512),
             nn.Linear(512, 256),
@@ -29,9 +32,11 @@ class Discriminator(nn.Module):
         self.model = nn.Sequential(
             nn.Linear(pixel_num, 813),
             nn.LeakyReLU(0.2),
-            nn.Linear(813, 64),
+            nn.Linear(813, 256),
             nn.LeakyReLU(0.2),
-            nn.Linear(64, 64),
+            nn.Linear(256, 128),
+            nn.LeakyReLU(0.2),
+            nn.Linear(128, 64),
             nn.LeakyReLU(0.2),
             nn.Linear(64, 1),
             nn.Sigmoid()

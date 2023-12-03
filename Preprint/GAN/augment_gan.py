@@ -3,7 +3,7 @@ from gan import *
 def augment_gan(num_augment, train_set, test_set, verbose, split):
     num_pixels = len(train_set.columns) - 1
     pipe = rp.preprocessing.Pipeline([
-        rp.preprocessing.denoise.SavGol(window_length=14, polyorder=3),
+        rp.preprocessing.denoise.SavGol(window_length=21, polyorder=3),
     ])
     df_list = [train_set]
 

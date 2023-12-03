@@ -37,7 +37,7 @@ def get_distribution_labels(d, train_set, vae, device):
                 x_test = x.unsqueeze(0)
                 x_latent = vae.encoder(x_test)
                 latent[i, :] = x_latent.detach().cpu().numpy()[0]
-        # latent_means = np.mean(latent, axis=0)
+        #latent_means = np.mean(latent, axis=0)
         latent_variances = np.var(latent, axis=0)
         
         distribution_dict[label] = (np.zeros(d), latent_variances)

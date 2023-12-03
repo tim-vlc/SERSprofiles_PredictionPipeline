@@ -1,8 +1,8 @@
 from pipeline import *
 import pandas as pd
 
-df = pd.read_csv('../../CSVs/diabetes_raw.csv')
-df.drop('patient#', axis=1, inplace=True)
+df = pd.read_parquet('../../CSVs/wheatdata.parquet')
+#df.drop('patient#', axis=1, inplace=True)
 print(df.head())
 print(df.info())
 print(len(df))
@@ -14,4 +14,4 @@ df_processed = preprocess(df, 150, 1000, pixel_num, smoothmeth='SavGol', bcmeth=
 print(df_processed.head())
 print(df_processed.info())
 
-df_processed.to_csv('../../CSVs/diabetes.csv', index=False)
+df_processed.to_csv('../../CSVs/wheatdata_processed.csv', index=False)
