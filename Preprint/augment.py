@@ -20,11 +20,11 @@ path_to_file = '../../CSVs/celllines.csv'
 df_all = pd.read_csv(path_to_file)
 print(df_all.head())
 
-splits = np.arange(0.80, 0.10, -0.05)
+splits = np.arange(0.80, 0.05, -0.1)
 print(splits)
 
 res_array = np.zeros((len(splits), 10))
-num_repeats = 1
+num_repeats = 4
 
 for i, split in enumerate(splits):
     acci = np.zeros(num_repeats)
@@ -32,7 +32,7 @@ for i, split in enumerate(splits):
     GAN_acci = np.zeros(num_repeats)
     for j in range(num_repeats):
         num_augment = int(split * len(df_all))
-        VAEaug_set, train_set, test_set = augment_vae(num_augment, df_all, split, 5, True)
+        VAEaug_set, train_set, test_set = augment_vae(num_augment, df_all, split, 15, True)
         VAE_acci[j] = ConvolutionalNeuralNetwork(VAEaug_set, test_set)
         GANaug_set = augment_gan(num_augment, train_set, test_set, True, split)
         GAN_acci[j] = ConvolutionalNeuralNetwork(GANaug_set, test_set)
@@ -59,5 +59,5 @@ for i, split in enumerate(splits):
     print(acc_med, VAE_acc_med, GAN_acc_med)
     res_array[i, :] = np.array([split, acc_med, VAE_acc_med, GAN_acc_med, acc_mean, VAE_acc_mean, GAN_acc_mean, acc_var, VAE_acc_var, GAN_acc_var])
 
-res_df = pd.DataFrame(res_array, columns=['test_percentage', 'median acc', 'median VAE_acc', 'median GAN_acc', 'mean acc', 'mean VAE_acc', 'mean GAN_acc', 'var acc', 'var VAE_acc', 'var GAN_acc'])
-res_df.to_csv('results_splits_celllines2.csv', index=False)
+res_df = pd.DataFrame(res_array, columns=['test_percentage', 'median acc', 'median VAE_acc', 'median GAN_acc', 'mean acc', 'mean VAE_acc', 'mean GAN_acc', 'var acc', 'var VAE_acc', 'var GAN_Acc'])
+res_df.to_csv('results_splits_celllines.csv', index=False)
