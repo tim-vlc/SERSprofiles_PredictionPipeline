@@ -114,7 +114,7 @@ def train_gan(label, train_data, verbose, split):
     dataset = TensorDataset(spectra_tensor, labels_tensor)
 
     # Set batch size and number of workers
-    batch_size = 25
+    batch_size = 40
     num_workers = 0
 
     if len(df) % batch_size == 1:

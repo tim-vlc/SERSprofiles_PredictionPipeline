@@ -14,10 +14,10 @@ import matplotlib.pyplot as plt
 
 type_ = 'processed'
 input_size = 1650 if type_ == 'raw' else 851
-ratio = 0.8
+ratio = 0.1
 
 # IMPORT DATA
-path_to_file = '../../CSVs/diabetes.csv'
+path_to_file = '../../CSVs/wheatdata_processed.csv'
 
 data = pd.read_csv(path_to_file)
 
@@ -32,9 +32,9 @@ X_train, y_train = train_data.iloc[:,:-1], train_data['labels']
 output_size = 2
 
 dropratio = 0.15
-alpha = 0.0001 # learning rate
-batch = 175
-ep = 10 # epoch
+alpha = 1e-5 # learning rate
+batch = 300
+ep = 5 # epoch
     
 model = CNN(input_size, output_size)
 model.to(device)
