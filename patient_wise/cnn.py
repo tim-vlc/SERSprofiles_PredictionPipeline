@@ -176,10 +176,10 @@ def ConvolutionalNeuralNetwork(train_data, test_data):
 
     test_truth = np.argmax(y_test, 1)
 
-    labels = __builtins__.list(np.unique(test_truth))
+    labels = list(np.unique(test_truth))
     num_labels = len(labels)
-    tickx = __builtins__.list(np.linspace(0.5, num_labels - 0.5, num_labels))
-    ticky = __builtins__.list(np.linspace(0.45, num_labels - 0.55, num_labels))
+    tickx = list(np.linspace(0.5, num_labels - 0.5, num_labels))
+    ticky = list(np.linspace(0.45, num_labels - 0.55, num_labels))
 
     conf_mat = confusion_matrix(labels_array, prediction_array, labels=labels, sample_weight=None, normalize=None)
 
