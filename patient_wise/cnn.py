@@ -23,19 +23,21 @@ class CNN(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv1d(in_channels=1, out_channels=32, kernel_size=20, stride=1),
             nn.BatchNorm1d(32), #881 size
-            nn.ReLU()
+            nn.LeakyReLU()
         )
 
         # 2nd Convolutional Layer
         self.conv2 = nn.Sequential(
             nn.Conv1d(in_channels=32, out_channels=64, kernel_size=20, stride=1),
             nn.BatchNorm1d(64), #862 size
-            nn.ReLU()
+            nn.LeakyReLU()
         )
 
         # Fully Connected Layers
-        self.fc1 = nn.Linear(813 * 64, 20)
-        self.fc2 = nn.Linear(20, self.output_size)
+        self.fc1 = nn.Linear(813 * 64, 1024)
+        self.fc2 = nn.Linear(1024, 512)
+        self.fc3 = nn.Linear(512, 256)
+        self.fc4 = nn.Linear(256, self.output_size)
 
         # Dropout layer with inactivation probability of 0.1
         self.dropout = nn.Dropout(0.1)
@@ -54,7 +56,9 @@ class CNN(nn.Module):
 
         # Fully connected layers with ReLU activation
         x = self.dropout(nn.LeakyReLU()(self.fc1(x)))
-        x = self.fc2(x)
+        x = self.dropout(nn.LeakyReLU()(self.fc2(x)))
+        x = self.dropout(nn.LeakyReLU()(self.fc3(x)))
+        x = self.fc4(x)
 
         # Softmax output
         x = self.softmax(x)
