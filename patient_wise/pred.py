@@ -5,7 +5,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import LabelBinarizer
 
 # IMPORT DATA
-path_to_file = '../processed_data_untrimmed.parquet'
+path_to_file = '../../processed_data_untrimmed.parquet'
 
 df_all = pd.read_parquet(path_to_file)
 
@@ -14,13 +14,7 @@ df_all = df_all.rename(columns = {'label':'labels'})
 # Specify each patient number for each label
 df_all['patient#'] = df_all['labels'].apply(lambda x: x[0]) + df_all['patient#'].astype(str)
 
-print(df_all.head())
-
-print(df_all.info())
-
 train_data, test_data = ttsplit(df_all, 0.25)
-
-print(train_data.info())
 
 nn_model, nn_probs = NeuralNetwork(train_data.iloc[:, :-1], test_data.iloc[:, :-1])
 

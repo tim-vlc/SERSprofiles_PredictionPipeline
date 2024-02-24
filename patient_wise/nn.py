@@ -13,24 +13,27 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 
 class NN(nn.Module):
-    def __init__(self, input_size, output_size, dense1_output, dense2_output, dense3_output, dense4_output, dropratio):
+    def __init__(self, input_size, output_size, dense1_output, dense2_output, dense3_output, dense4_output, dense5_output, dropratio):
         super(NN, self).__init__()
 
         self.dense1 = nn.Linear(input_size, dense1_output)
-        self.relu1 = nn.ReLU()
+        self.relu1 = nn.ELU()
         self.dropout1 = nn.Dropout(dropratio)
 
         self.dense2 = nn.Linear(dense1_output, dense2_output)
-        self.relu2 = nn.ReLU()
+        self.relu2 = nn.ELU()
         self.dropout2 = nn.Dropout(dropratio)
 
         self.dense3 = nn.Linear(dense2_output, dense3_output)
-        self.relu3 = nn.ReLU()
+        self.relu3 = nn.ELU()
 
         self.dense4 = nn.Linear(dense3_output, dense4_output)
-        self.relu4 = nn.ReLU()
+        self.relu4 = nn.ELU()
 
-        self.final = nn.Linear(dense4_output, output_size)
+        self.dense5 = nn.Linear(dense4_output, dense5_output)
+        self.relu5 = nn.ELU()
+
+        self.final = nn.Linear(dense5_output, output_size)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
@@ -44,6 +47,8 @@ class NN(nn.Module):
         x = self.relu3(x)
         x = self.dense4(x)
         x = self.relu4(x)
+        x = self.dense5(x)
+        x = self.relu5(x)
         x = self.final(x)
         x = self.softmax(x)
         return x
@@ -58,19 +63,21 @@ def NeuralNetwork(train_data, test_data):
     output_size = len(y_train.unique())
 
     dense1_output = 512
-    dense2_output = 256
-    dense3_output = 128
-    dense4_output = 20
+    dense2_output = 512
+    dense3_output = 512
+    dense4_output = 256
+    dense5_output = 128
 
     dropratio = 0.15
-    alpha = 0.0001 # learning rate
+    alpha = 1e-4 # learning rate
     batch = 10
-    ep = 5 # epoch
+    ep = 10 # epoch
 
     # Uses the gpu if available
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print("Device used: ", device)
 
-    model = NN(input_size, output_size, dense1_output, dense2_output, dense3_output, dense4_output, dropratio)
+    model = NN(input_size, output_size, dense1_output, dense2_output, dense3_output, dense4_output, dense5_output, dropratio)
     model.to(device)
 
     criterion = nn.CrossEntropyLoss()
@@ -169,10 +176,10 @@ def NeuralNetwork(train_data, test_data):
 
     test_truth = np.argmax(y_test, 1)
 
-    labels = __builtins__.list(np.unique(test_truth))
+    labels = list(np.unique(test_truth))
     num_labels = len(labels)
-    tickx = __builtins__.list(np.linspace(0.5, num_labels - 0.5, num_labels))
-    ticky = __builtins__.list(np.linspace(0.45, num_labels - 0.55, num_labels))
+    tickx = list(np.linspace(0.5, num_labels - 0.5, num_labels))
+    ticky = list(np.linspace(0.45, num_labels - 0.55, num_labels))
 
     conf_mat = confusion_matrix(labels_array, prediction_array, labels=labels, sample_weight=None, normalize=None)
 
@@ -191,7 +198,7 @@ def NeuralNetwork(train_data, test_data):
     plt.xlabel('Predicted label', fontsize=16, fontweight='bold')
 
     plt.title("Confusion matrix of trained NN", fontsize=20, fontweight='bold')
-    plt.savefig('/content/drive/MyDrive/RamanMeasurements/GBM/Patient/Confmat_NN.png', dpi=200)
+    plt.savefig('Confmat_NN.png', dpi=200)
     plt.show()
 
     return model, probabilities
