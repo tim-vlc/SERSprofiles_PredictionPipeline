@@ -55,7 +55,7 @@ class NN(nn.Module):
 
 
 # FUNCTION FOR TRAINING AND EVALUATING NN
-def NeuralNetwork(train_data, test_data):
+def NeuralNetwork(train_data, test_data, confmat="Confmat_NN"):
     X_test, y_test = test_data.iloc[:,:-1], test_data['labels']
     X_train, y_train = train_data.iloc[:,:-1], train_data['labels']
 
@@ -198,7 +198,7 @@ def NeuralNetwork(train_data, test_data):
     plt.xlabel('Predicted label', fontsize=16, fontweight='bold')
 
     plt.title("Confusion matrix of trained NN", fontsize=20, fontweight='bold')
-    plt.savefig('Confmat_NN.png', dpi=200)
+    plt.savefig(f'{confmat}.png', dpi=200)
     plt.show()
 
-    return model, probabilities
+    return model, probabilities, full_predicted
