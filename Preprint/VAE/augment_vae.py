@@ -28,15 +28,13 @@ def augment_vae(num_augment, data, split, num_epochs, verbose):
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    vae = VariationalAutoencoder(latent_dims=d, device=device, verbose=verbose)
+    vae = VariationalAutoencoder(latent_dims=d, verbose=verbose)
 
     lr = 1e-4
 
     optim_ = torch.optim.Adam(vae.parameters(), lr=lr, weight_decay=1e-5)
 
     vae.to(device)
-    vae.encoder.to(device)
-    vae.decoder.to(device)
 
     # Train
     # ----------------------------------------------------------

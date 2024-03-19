@@ -4,6 +4,8 @@ import torch.optim as optim
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
+from utils import *
+
 import numpy as np
 
 class CNN(nn.Module):
@@ -12,24 +14,26 @@ class CNN(nn.Module):
 
         self.input_size = input_size
         self.output_size = output_size
-        
+
         # 1st Convolutional Layer
         self.conv1 = nn.Sequential(
-            nn.Conv1d(in_channels=1, out_channels=32, kernel_size=20, stride=1),
-            nn.BatchNorm1d(32), #881 size
+            nn.Conv1d(in_channels=1, out_channels=16, kernel_size=5, stride=1),
+            nn.BatchNorm1d(16), #881 size
             nn.ReLU()
         )
-        
+
         # 2nd Convolutional Layer
         self.conv2 = nn.Sequential(
-            nn.Conv1d(in_channels=32, out_channels=64, kernel_size=20, stride=1),
-            nn.BatchNorm1d(64), #862 size
+            nn.Conv1d(in_channels=16, out_channels=32, kernel_size=5, stride=1),
+            nn.BatchNorm1d(32), #862 size
             nn.ReLU()
         )
 
         # Fully Connected Layers
-        self.fc1 = nn.Linear(1612 * 64, 20) if self.input_size == 1650 else nn.Linear(813 * 64, 20) # 813 for input 851 or 1612 for 1650
-        self.fc2 = nn.Linear(20, self.output_size)         # 5 output neurons for the 5 possible classes
+        self.fc1 = nn.Linear(843 * 32, 2048) # 1642 or 843
+        self.fc2 = nn.Linear(2048, 1024)
+        self.fc3 = nn.Linear(1024, 128)
+        self.fc4 = nn.Linear(128, self.output_size)
 
         # Dropout layer with inactivation probability of 0.1
         self.dropout = nn.Dropout(0.1)
@@ -48,7 +52,9 @@ class CNN(nn.Module):
 
         # Fully connected layers with ReLU activation
         x = self.dropout(nn.ReLU()(self.fc1(x)))
-        x = self.fc2(x)
+        x = self.dropout(nn.ReLU()(self.fc2(x)))
+        x = self.dropout(nn.ReLU()(self.fc3(x)))
+        x = self.fc4(x)
 
         # Softmax output
         x = self.softmax(x)
@@ -58,17 +64,18 @@ class CNN(nn.Module):
 def ConvolutionalNeuralNetwork(train_data, test_data):
     X_test, y_test = test_data.iloc[:,:-1], test_data['labels']
     X_train, y_train = train_data.iloc[:,:-1], train_data['labels']
-    
+
     input_size = len(train_data.columns) - 1
     output_size = len(y_train.unique())
 
     alpha = 1e-5 # learning rate
-    batch = 1000 
-    ep = 20 # epoch
+    batch = 300
+    ep = 3 # epoch
 
     # Uses the gpu if available
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    
+    print(device)
+
     model = CNN(input_size, output_size)
     model.to(device)
 
@@ -86,6 +93,7 @@ def ConvolutionalNeuralNetwork(train_data, test_data):
     onehot_train = OneHotEncoder(sparse_output=False)
     onehot_test = OneHotEncoder(sparse_output=False)
 
+
     y_train = onehot_train.fit_transform(train_labels.reshape(-1, 1))
     y_test = onehot_test.fit_transform(test_labels.reshape(-1, 1))
 
@@ -100,28 +108,28 @@ def ConvolutionalNeuralNetwork(train_data, test_data):
         for i in range(0, len(X_train), batch):
             batch_X = X_train[i:i+batch].clone().detach().float().to(device)
             batch_y = y_train[i:i+batch].clone().detach().float().to(device)
-            
+
             optimizer.zero_grad()
             outputs = model(batch_X)
             loss = criterion(outputs, batch_y)
-            
+
             loss.backward()
             optimizer.step()
-            
+
             running_loss += loss.item()
             torch.cuda.empty_cache()
-        
+
         # Print the average loss for the epoch
         avg_loss = running_loss / (len(X_train) / batch)
         print(f'Epoch [{epoch+1}/{ep}], Loss: {avg_loss:.4f}')
 
-    # Calculate the accuracy of the network
+    # Calculate the accuracy
+    correct = 0
+    total = 0
+
     full_truth = np.array([])
     full_outputs = np.array([])
     full_predicted = np.array([])
-    
-    correct = 0
-    total = 0
 
     with torch.no_grad():
         for i in range(0, len(X_test), batch):
@@ -144,7 +152,12 @@ def ConvolutionalNeuralNetwork(train_data, test_data):
 
             total += truth.shape[0]
             correct += (predicted == truth).sum().item()
-    accuracy = 100 * correct / total
+
     print('Accuracy of the network on the test data: %f %%' % (
-        accuracy))
+        100 * correct / total))
+
+    weights = calculate_weights(full_truth)
+    accuracy = weighted_accuracy(full_truth, full_predicted, weights)
+    print("Weighted Accuracy:", accuracy)
+
     return accuracy

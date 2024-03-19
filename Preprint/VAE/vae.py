@@ -1,7 +1,7 @@
 from libraries import *
 
 class VariationalEncoder(nn.Module):
-    def __init__(self, latent_dims, device):  
+    def __init__(self, latent_dims):  
         super(VariationalEncoder, self).__init__()
 
         # 1st Convolutional Layer
@@ -18,10 +18,8 @@ class VariationalEncoder(nn.Module):
 
         self.N = torch.distributions.Normal(0, 1)
         self.kl = 0
-        self.device = device
 
     def forward(self, x):
-        # x = x.to(device)
         x = x.unsqueeze(1)
         x = F.relu(self.conv1(x))
         x = x.view(x.size(0), -1)  # Flatten the output for fully connected layers
@@ -32,9 +30,9 @@ class VariationalEncoder(nn.Module):
         x = F.relu(self.fc4(x))
         mu = self.fc5(x)
         sigma = torch.exp(self.fc6(x))
-        N = self.N.sample(mu.shape).clone().detach().to(self.device)
+        N = self.N.sample(mu.shape)
         z = mu + sigma * N
-        self.kl = 0.0001 * (sigma**2 + mu**2 - torch.log(sigma) - 1/2).mean()
+        self.kl = (sigma**2 + mu**2 - torch.log(sigma) - 1/2).sum()
         return z
 
 class Decoder(nn.Module):
@@ -55,15 +53,13 @@ class Decoder(nn.Module):
         return z
     
 class VariationalAutoencoder(nn.Module):
-    def __init__(self, latent_dims, device, verbose):
+    def __init__(self, latent_dims, verbose):
         super(VariationalAutoencoder, self).__init__()
         self.verbose = verbose
-        self.encoder = VariationalEncoder(latent_dims, device)
+        self.encoder = VariationalEncoder(latent_dims)
         self.decoder = Decoder(latent_dims)
-        self.device = device
 
     def forward(self, x):
-        # x = x.to(device)
         z = self.encoder(x)
         return self.decoder(z)
     
